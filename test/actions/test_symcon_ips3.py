@@ -44,13 +44,13 @@ def fake_post(*args, data, **kw):
 
 
 class TestIPSRPCSetValueAction(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_validation(self, instance):
         instance.config.load(io.StringIO(stub_config))
         with self.assertRaises(ValueError):
             symcon_ips3.instantiate("set", "NaN", "something")
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, instance):
         instance.config.load(io.StringIO(stub_config))
         ac = symcon_ips3.instantiate("set", 1, "somevalue")
@@ -62,13 +62,13 @@ class TestIPSRPCSetValueAction(DoorPiTestCase):
 
 
 class TestIPSRPCCallFromVariableAction(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_instantiation(self, instance):
         instance.config.load(io.StringIO(stub_config))
         with self.assertRaises(ValueError):
             symcon_ips3.instantiate("call", "NaN")
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, instance):
         instance.config.load(io.StringIO(stub_config))
         ac = symcon_ips3.instantiate("call", 1)

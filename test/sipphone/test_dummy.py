@@ -5,7 +5,7 @@ from doorpi.sipphone.from_dummy import DummyPhone
 from ..mocks import DoorPi, DoorPiTestCase
 
 
-@mock.patch("doorpi.INSTANCE", new_callable=DoorPi)
+@mock.patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
 class DummyPhoneTest(DoorPiTestCase):
     def test_creating_DummyPhone_registers_lifecycle_events_and_fires_oncreate(
         self, instance

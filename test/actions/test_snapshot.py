@@ -25,13 +25,13 @@ class SnapshotTestCase(DoorPiTestCase):
 
 class TestURLSnapshotAction(SnapshotTestCase):
     @patch("requests.get")
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, _, get):
         ac = snapshot.URLSnapshotAction("http://localhost")
         ac(EVENT_ID, EVENT_EXTRA)
         get.assert_called_once_with("http://localhost", stream=True, timeout=30)
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_cleanup(self, _):
         for i in range(60):
             (self.snap_path / f"1970-01-01 00:{i:02d}:00.jpg").open("w").close()
@@ -47,7 +47,7 @@ class TestURLSnapshotAction(SnapshotTestCase):
 @skipIf(find_spec("picamera") is None, "picamera module not available")
 class TestPicamSnapshotAction(SnapshotTestCase):
     @patch("picamera.PiCamera")
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, _, picamera):
         snapshot.PicamSnapshotAction()(EVENT_ID, EVENT_EXTRA)
 

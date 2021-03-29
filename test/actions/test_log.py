@@ -9,7 +9,7 @@ LOGMSG = "Test log message"
 
 
 class TestActionCall(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, _):
         ac = log.LogAction(LOGMSG)
 

@@ -11,7 +11,7 @@ ES = "doorpi.actions.tick"
 
 
 class TestTickAction(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_fire_yearly(self, instance):
         dtmock = Mock(wraps=datetime)
         dtmock.now.return_value = datetime(2001, 1, 1, 0, 0, 0)
@@ -26,7 +26,7 @@ class TestTickAction(DoorPiTestCase):
             [call("OnTimeYear", ES), call("OnTimeYearOdd", ES)], any_order=True
         )
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_fire_monthly(self, instance):
         dtmock = Mock(wraps=datetime)
         dtmock.now.return_value = datetime(2000, 2, 1, 0, 0, 0)
@@ -42,7 +42,7 @@ class TestTickAction(DoorPiTestCase):
             any_order=True,
         )
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_fire_daily(self, instance):
         dtmock = Mock(wraps=datetime)
         dtmock.now.return_value = datetime(2000, 1, 2, 0, 0, 0)
@@ -57,7 +57,7 @@ class TestTickAction(DoorPiTestCase):
             [call("OnTimeDay", ES), call("OnTimeDayEven", ES)], any_order=True
         )
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_fire_hourly(self, instance):
         dtmock = Mock(wraps=datetime)
         dtmock.now.return_value = datetime(2000, 1, 1, 1, 0, 0)
@@ -77,7 +77,7 @@ class TestTickAction(DoorPiTestCase):
             any_order=True,
         )
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_fire_minutely(self, instance):
         dtmock = Mock(wraps=datetime)
         dtmock.now.return_value = datetime(2000, 1, 1, 0, 1, 0)
@@ -97,7 +97,7 @@ class TestTickAction(DoorPiTestCase):
             any_order=True,
         )
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_fire_secondly(self, instance):
         dtmock = Mock(wraps=datetime)
         dtmock.now.return_value = datetime(2000, 1, 1, 0, 0, 1)

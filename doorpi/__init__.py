@@ -3,6 +3,9 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
+if TYPE_CHECKING:  # pragma: no cover
+    from . import doorpi
+
 __all__: list[str] = []
 
 INSTANCE: "doorpi.DoorPi"
@@ -22,8 +25,3 @@ class DoorPiLogger(logging.getLoggerClass()):  # type: ignore[misc]
 
 
 logging.setLoggerClass(DoorPiLogger)
-
-if TYPE_CHECKING:  # pragma: no cover
-    from . import doorpi
-else:
-    INSTANCE = None

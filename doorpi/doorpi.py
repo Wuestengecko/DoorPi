@@ -14,7 +14,7 @@ import sys
 import threading
 import time
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 import doorpi
 import doorpi.actions.snapshot
@@ -89,7 +89,7 @@ class DoorPi:
         return self._base_path
 
     def __init__(self, args: argparse.Namespace) -> None:
-        if not TYPE_CHECKING and doorpi.INSTANCE is not None:
+        if hasattr(doorpi, "INSTANCE"):
             raise RuntimeError("Only one DoorPi instance can be created")
         doorpi.INSTANCE = self
 

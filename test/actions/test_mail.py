@@ -41,7 +41,7 @@ class TestMailAction(DoorPiTestCase):
         Path("doorpi.ini").write_text(config, encoding="locale")
 
     @patch("smtplib.SMTP")
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_send_plain(self, instance, smtp):
         instance.config.load(io.StringIO(stub_config))
         smtp.return_value.__enter__.return_value.send_message.return_value = (
@@ -64,7 +64,7 @@ class TestMailAction(DoorPiTestCase):
         self.assertEqual(msg.get_content(), "Test body\n\n!EPILOG!\n")
 
     @patch("smtplib.SMTP")
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_send_snapshot(self, instance, smtp):
         instance.config.load(io.StringIO(stub_config))
         smtp.return_value.__enter__.return_value.send_message.return_value = (

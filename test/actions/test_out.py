@@ -12,19 +12,19 @@ HOLD = 5
 
 
 class TestActionCall(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_argvalidation(self, _):
         with self.assertRaises(ValueError):
             out.instantiate(PIN, START, STOP, "invalid")
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_normal(self, instance):
         ac = out.instantiate(PIN, START)
         ac(EVENT_ID, EVENT_EXTRA)
         instance.keyboard.output.assert_called_once_with(PIN, START)
 
     @patch("threading.Event")
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_triggered(self, instance, event):
         ac = out.instantiate(PIN, START, STOP, HOLD)
         ac(EVENT_ID, EVENT_EXTRA)

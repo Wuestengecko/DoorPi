@@ -10,7 +10,7 @@ SIPURL = "sip:null@null"
 
 
 class TestActionCall(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, instance):
         ac = call.CallAction(SIPURL)
         instance.sipphone.call.assert_not_called()
@@ -20,7 +20,7 @@ class TestActionCall(DoorPiTestCase):
 
 
 class TestActionFileCallValue(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_instantiation(self, instance):
         with NamedTemporaryFile(mode="w", encoding="utf-8") as tmpfile:
             tmpfile.write(SIPURL)
@@ -28,7 +28,7 @@ class TestActionFileCallValue(DoorPiTestCase):
             call.CallFromFileAction(tmpfile.name)
             instance.sipphone.call.assert_not_called()
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, instance):
         with NamedTemporaryFile(mode="w", encoding="utf-8") as tmpfile:
             tmpfile.write(SIPURL)
@@ -38,7 +38,7 @@ class TestActionFileCallValue(DoorPiTestCase):
             ac(EVENT_ID, EVENT_EXTRA)
             instance.sipphone.call.assert_called_once_with(SIPURL)
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_emptyfile(self, _):
         with NamedTemporaryFile(mode="w", encoding="utf-8") as tmpfile:
             ac = call.CallFromFileAction(tmpfile.name)
@@ -47,7 +47,7 @@ class TestActionFileCallValue(DoorPiTestCase):
 
 
 class TestActionHangup(DoorPiTestCase):
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_action(self, instance):
         ac = call.HangupAction()
         instance.sipphone.hangup.assert_not_called()

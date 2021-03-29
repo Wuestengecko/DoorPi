@@ -45,7 +45,7 @@ class TestCheckAction(DoorPiTestCase):
         ac(EVENT_ID, EVENT_EXTRA)
         mock.assert_called_with()
 
-    @patch("doorpi.INSTANCE", new_callable=DoorPi)
+    @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_check_failing(self, instance):
         mock = MagicMock(side_effect=Exception)
         ac = doorpi.actions.CheckAction(mock)
