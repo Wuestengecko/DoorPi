@@ -119,6 +119,7 @@ def main() -> None:
     instance = doorpi.DoorPi(args)
     del args
     try:
+        instance.base_path.mkdir(parents=True, exist_ok=True)
         os.chdir(instance.base_path)
         instance.prepare()
     except BaseException:
