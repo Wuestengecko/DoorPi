@@ -40,8 +40,9 @@ class GPIOKeyboard(AbstractKeyboard):
         else:
             raise ValueError(f"{self.name}: Invalid pull_up_down value")
 
-        gpio.setup(self._inputs, gpio.IN, pull_up_down=pull)
-        for input_pin in self._inputs:
+        input_pins = [int(i) for i in self._inputs]
+        gpio.setup(input_pins, gpio.IN, pull_up_down=pull)
+        for input_pin in input_pins:
             gpio.add_event_detect(
                 input_pin,
                 gpio.BOTH,
@@ -51,7 +52,8 @@ class GPIOKeyboard(AbstractKeyboard):
                 ),
             )
 
-        gpio.setup(self._outputs.keys(), gpio.OUT)
+        output_pins = [int(i) for i in self._outputs]
+        gpio.setup(output_pins, gpio.OUT)
         for output_pin in self._outputs:
             self.output(output_pin, False)
 
@@ -64,15 +66,15 @@ class GPIOKeyboard(AbstractKeyboard):
         INSTANTIATED = False
         super().destroy()
 
-    def event_detect(self, pin: str) -> None:
+    def event_detect(self, pin: int) -> None:
         """Callback for detected GPIO events."""
         if self.input(pin):
-            self._fire_keydown(pin)
+            self._fire_keydown(str(pin))
         else:
-            self._fire_keyup(pin)
+            self._fire_keyup(str(pin))
 
-    def input(self, pin: str) -> bool:
-        super().input(pin)
+    def input(self, pin: int | str) -> bool:
+        super().input(str(pin))
         pin_id = int(pin)
         return self._normalize(gpio.input(pin_id))
 
