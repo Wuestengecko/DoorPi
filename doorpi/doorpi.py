@@ -96,7 +96,14 @@ class DoorPi:
         self.configfile = pathlib.Path(args.configfile)
         self.config = doorpi.config.Configuration()
         self.config.load_builtin_definitions()
-        self.config.load(self.configfile)
+        try:
+            self.config.load(self.configfile)
+        except FileNotFoundError:
+            LOGGER.error(
+                "No configuration file found at %s, using defaults",
+                self.configfile,
+            )
+
         try:
             self._base_path = self.config["base_path"]
         except KeyError:
