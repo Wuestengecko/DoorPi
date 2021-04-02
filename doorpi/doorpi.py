@@ -93,7 +93,7 @@ class DoorPi:
             raise RuntimeError("Only one DoorPi instance can be created")
         doorpi.INSTANCE = self
 
-        self.configfile = pathlib.Path(args.configfile)
+        self.configfile = pathlib.Path(args.configfile).resolve()
         self.config = doorpi.config.Configuration()
         self.config.load_builtin_definitions()
         try:
