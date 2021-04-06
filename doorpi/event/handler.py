@@ -181,15 +181,12 @@ class EventHandler:
             except doorpi.event.AbortEventExecution:
                 LOGGER.info("[%s] Aborting event execution early")
             except Exception:
-                try:
-                    LOGGER.exception(
-                        '[%s] Error executing action "%s" for event %s',
-                        event_id,
-                        action,
-                        event,
-                    )
-                except Exception:
-                    LOGGER.exception("[%s] Error executing an action")
+                LOGGER.exception(
+                    '[%s] Error executing action "%s" for event %s',
+                    event_id,
+                    action,
+                    event,
+                )
 
             if getattr(action, "oneshot", False):
                 oneshot_actions.append(action)
