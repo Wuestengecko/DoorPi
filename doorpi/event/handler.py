@@ -152,16 +152,14 @@ class EventHandler:
         if not suppress_logs:
             self.log.log_event(event_id, source, event, start_time, extra)
 
+        last_info = self.extra_info.get(event, {})
         extra.update({
             "last_fired": str(start_time),
+            "last_finished": last_info.get("last_finished"),
+            "last_duration": last_info.get("last_duration"),
             "source": source,
             "event_id": event_id,
         })
-
-        # copy over info from last event run
-        last_info = self.extra_info.get(event, {})
-        for key in ["last_finished", "last_duration"]:
-            extra[key] = last_info.get(key, None)
         self.extra_info[event] = extra
 
         if not suppress_logs:
