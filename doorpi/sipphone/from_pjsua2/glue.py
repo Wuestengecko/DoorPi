@@ -120,7 +120,7 @@ class Pjsua2(AbstractSIPPhone):
                     "outgoing" if ci.role == pj.PJSIP_ROLE_UAC else "incoming"
                 ),
                 "remote_uri": ci.remoteUri,
-                "total_time": ci.connectDuration,
+                "total_time": ci.connectDuration.sec,
                 "camera": False,
             }
         return {}
