@@ -42,6 +42,7 @@ classifiers = [
 dependencies = [
   "aiohttp",
   "aiohttp-jinja2",
+  "platformdirs>=4.3.6",
   "docutils>=0.14",
   "jinja2>=2.11.0",
   "paho-mqtt>=2.1.0,<3",

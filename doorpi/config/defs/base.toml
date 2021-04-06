@@ -6,9 +6,9 @@ AfterStartup = "Fired synchronously after DoorPi started"
 [config.base_path]
 _description = """Base path for DoorPi
 
-Relative paths in the configuration will be interpreted from here"""
+Relative paths in the configuration will be interpreted from here.
+The default is platform dependent."""
 _type = "path"
-_default = "~/.local/share/doorpi"
 
 [config.eventlog]
 _description = "Path to the event log database"

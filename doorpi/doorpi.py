@@ -10,7 +10,6 @@ import logging
 import os
 import pathlib
 import signal
-import sys
 import threading
 import time
 from collections.abc import Mapping, Sequence
@@ -38,6 +37,7 @@ if __name__ == "__main__":
 class DoorPi:
     """The main DoorPi class that ties everything together."""
 
+    base_path: pathlib.Path
     config: doorpi.config.Configuration
     event_handler: doorpi.event.handler.EventHandler
     dpsd: doorpi.status.systemd.DoorPiSD
@@ -46,7 +46,6 @@ class DoorPi:
     sipphone: doorpi.sipphone.abc.AbstractSIPPhone
     webserver: threading.Thread | None
 
-    _base_path: pathlib.Path | None
     __deadlysignals: int
     __last_tick: float
     __prepared: bool
@@ -68,26 +67,6 @@ class DoorPi:
     ) -> doorpi.status.status_class.DoorPiStatus:
         return doorpi.status.status_class.DoorPiStatus(self, modules, value, name)
 
-    @property
-    def base_path(self) -> pathlib.Path:
-        if self._base_path is None:
-            name = doorpi.metadata.distribution.metadata["Name"]
-            base = pathlib.Path.home() / f"{name.lower()}.ini"
-            if base.is_file():
-                self._base_path = pathlib.Path.home()
-            elif sys.platform == "linux":
-                try:
-                    base = pathlib.Path(os.environ["XDG_CONFIG_HOME"])
-                except KeyError:
-                    base = pathlib.Path.home() / ".config"
-                self._base_path = base / name.lower()
-            elif sys.platform == "win32":
-                self._base_path = pathlib.Path(os.environ["APPDATA"]) / name
-            else:
-                self._base_path = pathlib.Path.home() / name.lower()
-            LOGGER.info("Auto-selected BasePath %s", self._base_path)
-        return self._base_path
-
     def __init__(self, args: argparse.Namespace) -> None:
         if hasattr(doorpi, "INSTANCE"):
             raise RuntimeError("Only one DoorPi instance can be created")
@@ -105,9 +84,9 @@ class DoorPi:
             )
 
         try:
-            self._base_path = self.config["base_path"]
+            self.base_path = self.config["base_path"]
         except KeyError:
-            self._base_path = None
+            self.base_path = pathlib.Path(doorpi.dirs.user_data_dir)
 
         self.event_handler = doorpi.event.handler.EventHandler()
         self.webserver = None

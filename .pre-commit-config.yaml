@@ -26,6 +26,7 @@ repos:
         additional_dependencies:
           - mypy==1.9.0
           - paho-mqtt==2.1.0
+          - platformdirs==4.3.6
           - types-toml
           - types-pytz
           - types-docutils

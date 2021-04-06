@@ -1,9 +1,7 @@
 """DoorPiWeb handlers for resources."""
 
 import logging
-import os
 import pathlib
-import sys
 
 import aiohttp.web
 import aiohttp_jinja2
@@ -20,17 +18,7 @@ parsable_file_extensions = {".html"}
 
 def setup(app: aiohttp.web.Application) -> None:
     """Setup the aiohttp_jinja2 environment."""
-    if sys.platform == "linux":
-        try:
-            cachedir = pathlib.Path(os.environ["XDG_CACHE_HOME"])
-        except KeyError:
-            cachedir = pathlib.Path.home() / ".cache"
-    elif sys.platform == "win32":
-        cachedir = pathlib.Path(os.environ["TEMP"])
-    else:
-        cachedir = pathlib.Path.home()
-    cachedir /= doorpi.metadata.distribution.metadata["Name"]
-    cachedir /= "templatecache"
+    cachedir = pathlib.Path(doorpi.dirs.user_cache_dir, "templatecache")
     cachedir.mkdir(parents=True, exist_ok=True)
 
     aiohttp_jinja2.setup(

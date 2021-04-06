@@ -3,10 +3,14 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
+import platformdirs
+
 if TYPE_CHECKING:  # pragma: no cover
     from . import doorpi
 
 __all__: list[str] = []
+
+dirs = platformdirs.PlatformDirs("doorpi")
 
 INSTANCE: "doorpi.DoorPi"
 
@@ -25,3 +29,5 @@ class DoorPiLogger(logging.getLoggerClass()):  # type: ignore[misc]
 
 
 logging.setLoggerClass(DoorPiLogger)
+
+del platformdirs

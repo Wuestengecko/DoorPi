@@ -5,9 +5,12 @@ import argparse
 import logging
 import logging.handlers
 import os
+import os.path
 import sys
 
-from doorpi import doorpi, metadata
+import doorpi
+from doorpi import metadata
+from doorpi.doorpi import DoorPi
 
 from . import TRACE_LEVEL
 
@@ -95,10 +98,7 @@ def parse_arguments() -> argparse.Namespace:
         help="Specify file to log into. If unspecified, log to stderr.",
     )
 
-    default_cfg = "/".join((
-        sys.prefix if sys.prefix != "/usr" else "",
-        "etc/doorpi/doorpi.ini",
-    ))
+    default_cfg = os.path.join(doorpi.dirs.user_config_dir, "doorpi.toml")
     arg_parser.add_argument(
         "-c",
         "--configfile",
@@ -116,7 +116,7 @@ def main() -> None:
     LOGGER.info(metadata.epilog)
     LOGGER.debug("DoorPi starting with arguments: %s", args)
 
-    instance = doorpi.DoorPi(args)
+    instance = DoorPi(args)
     del args
     try:
         instance.base_path.mkdir(parents=True, exist_ok=True)
