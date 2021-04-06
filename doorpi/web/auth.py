@@ -69,7 +69,7 @@ def is_user_authorized(request: aiohttp.web.Request) -> bool:
         return False
 
     if request.method == "GET":
-        accessible = session.readable | session.readable
+        accessible = session.readable | session.writable
     else:
         accessible = session.writable
 
