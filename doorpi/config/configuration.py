@@ -37,16 +37,22 @@ class Configuration:
 
     def load(self, path: str | pathlib.Path | TextIO) -> None:
         """Replace configuration by loading from the given TOML file."""
+        logger.info("Loading configuration from %s", path)
+        prev_values = self.__values
         self.__values = {}
-        subconf = list(toml.load(path).items())
-        while subconf:
-            key, val = subconf.pop()
-            if isinstance(val, dict):
-                subconf.extend(
-                    (f"{key}.{subkey}", subval) for subkey, subval in val.items()
-                )
-            else:
-                self[key] = val
+        try:
+            subconf = list(toml.load(path).items())
+            while subconf:
+                key, val = subconf.pop()
+                if isinstance(val, dict):
+                    subconf.extend(
+                        (f"{key}.{subkey}", subval) for subkey, subval in val.items()
+                    )
+                else:
+                    self[key] = val
+        except:
+            self.__values = prev_values
+            raise
 
     def save(self, path: str | os.PathLike | TextIO) -> None:
         """Save the configuration into the given TOML file."""
