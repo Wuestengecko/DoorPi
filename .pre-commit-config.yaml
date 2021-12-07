@@ -27,7 +27,8 @@ repos:
           - mypy==1.9.0
           - paho-mqtt==2.1.0
           - platformdirs==4.3.6
-          - types-toml
+          - tomli==1.2.2
+          - tomli-w==1.0.0
           - types-pytz
           - types-docutils
           - types-requests

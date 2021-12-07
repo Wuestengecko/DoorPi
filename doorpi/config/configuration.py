@@ -6,15 +6,21 @@ import itertools
 import logging
 import os
 import pathlib
+import sys
 from collections.abc import Iterator, Mapping, MutableMapping, Sequence
 from contextlib import AbstractContextManager
 from importlib import resources
-from typing import Any, TextIO
+from typing import Any, BinaryIO
 
-import toml
+import tomli_w
 
 from . import defs as _defs
 from . import types
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 logger = logging.getLogger(__name__)
 
@@ -33,15 +39,20 @@ class Configuration:
         for file in resources.files(_defs).iterdir():
             if file.name.endswith(".toml") and file.is_file():
                 logger.debug("Loading defs from %s", file.name)
-                self.attach_defs(toml.loads(file.read_text()))
+                self.attach_defs(tomllib.loads(file.read_text()))
 
-    def load(self, path: str | pathlib.Path | TextIO) -> None:
+    def load(self, path: str | pathlib.Path | BinaryIO) -> None:
         """Replace configuration by loading from the given TOML file."""
         logger.info("Loading configuration from %s", path)
         prev_values = self.__values
         self.__values = {}
         try:
-            subconf = list(toml.load(path).items())
+            if isinstance(path, os.PathLike | str):
+                file: AbstractContextManager[BinaryIO] = open(path, "rb")  # noqa: SIM115
+            else:
+                file = contextlib.nullcontext(path)
+            with file as f:
+                subconf = list(tomllib.load(f).items())
             while subconf:
                 key, val = subconf.pop()
                 if isinstance(val, dict):
@@ -54,14 +65,17 @@ class Configuration:
             self.__values = prev_values
             raise
 
-    def save(self, path: str | os.PathLike | TextIO) -> None:
+    def save(self, path: str | os.PathLike | BinaryIO) -> None:
         """Save the configuration into the given TOML file."""
+        dump = tomli_w.dumps(self.__values)
+        assert tomllib.loads(dump) == self.__values
+
         if isinstance(path, str | os.PathLike):
-            ctx: AbstractContextManager[TextIO] = open(path, "w", encoding="locale")  # noqa: SIM115
+            ctx: AbstractContextManager[BinaryIO] = open(path, "wb")  # noqa: SIM115
         else:
             ctx = contextlib.nullcontext(path)
         with ctx as file:
-            toml.dump(self.__values, file)
+            file.write(dump.encode("utf-8"))
 
     def attach_defs(self, defs: Mapping[str, Any]) -> None:
         """Attach a dictionary of key definitions to this configuration."""

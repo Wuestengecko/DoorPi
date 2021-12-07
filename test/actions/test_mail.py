@@ -8,7 +8,7 @@ from doorpi.actions import mail, snapshot
 from ..mocks import DoorPi, DoorPiTestCase
 from . import EVENT_EXTRA, EVENT_ID
 
-stub_config = """\
+stub_config = b"""\
 [snapshots]
 directory = "snaps"
 
@@ -43,7 +43,7 @@ class TestMailAction(DoorPiTestCase):
     @patch("smtplib.SMTP")
     @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_send_plain(self, instance, smtp):
-        instance.config.load(io.StringIO(stub_config))
+        instance.config.load(io.BytesIO(stub_config))
         smtp.return_value.__enter__.return_value.send_message.return_value = (
             200,
             b"OK",
@@ -66,7 +66,7 @@ class TestMailAction(DoorPiTestCase):
     @patch("smtplib.SMTP")
     @patch("doorpi.INSTANCE", new_callable=DoorPi, create=True)
     def test_send_snapshot(self, instance, smtp):
-        instance.config.load(io.StringIO(stub_config))
+        instance.config.load(io.BytesIO(stub_config))
         smtp.return_value.__enter__.return_value.send_message.return_value = (
             200,
             b"OK",

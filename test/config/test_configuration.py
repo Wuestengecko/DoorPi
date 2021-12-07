@@ -117,12 +117,12 @@ class TestConfigLoadSave(DoorPiTestCase):
 
     def test_config_can_be_loaded_from_filelike(self):
         keydef = {"testkey": {"_default": "foo"}}
-        conffile = "testkey = 'bar'"
+        conffile = b"testkey = 'bar'"
         conf_obj = config.Configuration()
         conf_obj.attach_defs({"config": keydef})
 
         with assert_no_raise(self):
-            conf_obj.load(io.StringIO(conffile))
+            conf_obj.load(io.BytesIO(conffile))
 
     def test_config_can_be_saved_to_file_given_as_str(self):
         conf_obj = config.Configuration()
@@ -136,20 +136,20 @@ class TestConfigLoadSave(DoorPiTestCase):
 
     def test_config_can_be_saved_to_filelike(self):
         conf_obj = config.Configuration()
-        target = io.StringIO()
+        target = io.BytesIO()
         with assert_no_raise(self):
             conf_obj.save(target)
 
     def test_loading_and_saving_results_in_same_file(self):
-        expected = io.StringIO(
+        expected = io.BytesIO(
             textwrap.dedent(
                 """\
-            testkey = "Testvalue"
+                testkey = "Testvalue"
 
-            [testsection]
-            testkey2 = 7
-            """
-            )
+                [testsection]
+                testkey2 = 7
+                """
+            ).encode("utf-8")
         )
         keydefs = {
             "testkey": {"_type": "string"},
@@ -162,7 +162,7 @@ class TestConfigLoadSave(DoorPiTestCase):
         conf_obj.attach_defs({"config": keydefs})
         conf_obj.load(expected)
 
-        actual = io.StringIO()
+        actual = io.BytesIO()
         conf_obj.save(actual)
 
         self.assertEqual(expected.getvalue(), actual.getvalue())
@@ -231,7 +231,8 @@ class TestConfigGetSet(DoorPiTestCase):
                         "testkey": {"_type": type_},
                     }
                 })
-                conf_obj.load(io.StringIO(f"testkey = {configval!s}"))
+                testconfig = f"testkey = {configval!s}".encode()
+                conf_obj.load(io.BytesIO(testconfig))
 
                 actual = conf_obj["testkey"]
                 self.assertIsInstance(actual, type(expected))
@@ -257,13 +258,13 @@ class TestConfigGetSet(DoorPiTestCase):
             [config]
             test_key = 'baz'
             """
-        )
+        ).encode("utf-8")
 
         with promise_deletion(config, "TestKey"):
             config.TestKey = TestKey
             conf_obj = config.Configuration()
             conf_obj.attach_defs({"config": keydef})
-            conf_obj.load(io.StringIO(conffile))
+            conf_obj.load(io.BytesIO(conffile))
 
             actual = conf_obj["config.test_key"]
             self.assertIs(actual, config.TestKey.baz)
@@ -354,18 +355,15 @@ class ConfigView(DoorPiTestCase):
         }
         conf_obj = config.Configuration()
         conf_obj.attach_defs({"config": keydef})
-        conf_obj.load(
-            io.StringIO(
-                textwrap.dedent(
-                    """\
+        testconfig = textwrap.dedent(
+            """\
             [namespace]
             key1 = false
             key2 = "bar"
             key3 = {subkey = 3}
             """
-                )
-            )
-        )
+        ).encode("utf-8")
+        conf_obj.load(io.BytesIO(testconfig))
 
         self.assertEqual(
             set(conf_obj.view("namespace")), set(keydef["namespace"].keys())
@@ -408,18 +406,15 @@ class ConfigView(DoorPiTestCase):
         }
         conf_obj = config.Configuration()
         conf_obj.attach_defs({"config": keydef})
-        conf_obj.load(
-            io.StringIO(
-                textwrap.dedent(
-                    """\
+        testconfig = textwrap.dedent(
+            """\
             [namespace]
             key1 = false
             key2 = "bar"
             key3 = {subkey = 3}
             """
-                )
-            )
-        )
+        ).encode("utf-8")
+        conf_obj.load(io.BytesIO(testconfig))
 
         self.assertEqual(len(conf_obj.view("namespace")), 3)
 
