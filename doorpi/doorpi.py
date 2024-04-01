@@ -123,15 +123,24 @@ class DoorPi:
         del stackframe
         self.__shutdown = True
         self.__deadlysignals += 1
-        LOGGER.info(
-            "Caught deadly signal %s (%d / %d)",
-            signal.Signals(signum).name,  # pylint: disable=no-member
-            self.__deadlysignals,
-            DEADLY_SIGNALS_ABORT,
-        )
+        signame = signal.Signals(signum).name  # pylint: disable=no-member
 
-        if self.__deadlysignals >= DEADLY_SIGNALS_ABORT:
-            raise Exception("Force-exiting due to signal")
+        if self.__deadlysignals == 1:
+            LOGGER.info("Caught deadly signal %s, shutting down", signame)
+            return
+        if self.__deadlysignals == 2:
+            LOGGER.info(
+                "Caught deadly signal %s (2/3), forcing shutdown", signame
+            )
+            # pylint: disable-next=broad-exception-raised
+            raise BaseException("Force-exiting due to signal")
+
+        LOGGER.info(
+            "Caught deadly signal %s (%d/3), aborting process",
+            signame,
+            self.__deadlysignals,
+        )
+        os._exit(255)
 
     def prepare(self) -> None:
         self.dpsd = doorpi.status.systemd.DoorPiSD()
