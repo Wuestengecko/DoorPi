@@ -111,8 +111,8 @@ class CallCallback(pj.Call):
             self.__fire_disconnect = True
             with sp._call_lock:
                 prm = pj.CallOpParam()
-                if sp.current_call is not None:
-                    # (note: this should not be possible)
+                if sp.current_call is not None and sp.current_call != self:
+                    LOGGER.warning("Hanging up ongoing call to accept new one")
                     sp.current_call.hangup(prm)
                     sp.current_call = None
 

@@ -61,7 +61,7 @@ class Pjsua2(AbstractSIPPhone):
         self._waiting_calls: List[str] = []
         # outgoing calls that are currently ringing
         self._ringing_calls: List[pj.Call] = []
-        self._call_lock = threading.Lock()
+        self._call_lock = threading.RLock()
         self._logwriter: Optional[Any] = None
         self.current_call: Optional[pj.Call] = None
         self.dialtone: Optional[fileio.DialTonePlayer] = None
