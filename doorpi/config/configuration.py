@@ -39,11 +39,10 @@ class Configuration:
 
     def load_builtin_definitions(self) -> None:
         """Load the built-in key definitions from the ``defs`` directory"""
-        for fname in resources.contents(_defs):
-            if fname.endswith(".toml") and resources.is_resource(_defs, fname):
-                logger.debug("Loading defs from %s", fname)
-                with resources.open_text(_defs, fname) as file:
-                    self.attach_defs(toml.load(file))
+        for file in resources.files(_defs).iterdir():
+            if file.name.endswith(".toml") and file.is_file():
+                logger.debug("Loading defs from %s", file.name)
+                self.attach_defs(toml.loads(file.read_text()))
 
     def load(self, path: Union[str, os.PathLike, TextIO]) -> None:
         """Replace configuration by loading from the given TOML file"""

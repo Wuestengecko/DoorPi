@@ -52,11 +52,10 @@ def from_string(confstr: str) -> Optional[Action]:
     if not atype:
         return None
     try:
-        entrypoint = next(
-            i
-            for i in importlib.metadata.entry_points()["doorpi.actions"]
-            if i.name == atype
+        eps = importlib.metadata.entry_points(
+            group="doorpi.actions", name=atype
         )
+        entrypoint = next(iter(eps))
     except StopIteration:
         raise ValueError(f"Unknown action {atype!r}") from None
     args = confstr[len(atype) + 1 :]

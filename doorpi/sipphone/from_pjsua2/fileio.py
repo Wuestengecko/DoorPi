@@ -30,7 +30,8 @@ class DialTonePlayer:
         eh = doorpi.INSTANCE.event_handler
 
         if filename is None:
-            ctx = resources.path(doorpi.sipphone, "dialtone.wav")
+            file = resources.files("doorpi.sipphone") / "dialtone.wav"
+            ctx = resources.as_file(file)
             eh.register_action(
                 "OnShutdown",
                 CallbackAction(
