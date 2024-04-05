@@ -175,6 +175,7 @@ class DoorPi:
         self.webserver = doorpi.web.load()  # pylint: disable=E1111, E1128
         self.keyboard = doorpi.keyboard.load()
         self.sipphone = doorpi.sipphone.load()
+        self.keyboard.start()
         self.sipphone.start()
 
         self.__prepared = True

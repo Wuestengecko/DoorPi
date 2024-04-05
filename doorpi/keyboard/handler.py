@@ -55,6 +55,11 @@ class KeyboardHandler:
         self.__keyboards = {}
 
         eh = doorpi.INSTANCE.event_handler
+        eh.register_action(
+            "OnTimeTick", doorpi.actions.CheckAction(self.self_check)
+        )
+
+    def start(self) -> None:
         conf = doorpi.INSTANCE.config.view("keyboard")
         LOGGER.info(
             "Instantiating %d keyboard(s): %s",
@@ -66,10 +71,6 @@ class KeyboardHandler:
             self.__keyboards[kbname] = self.__load_keyboard(
                 kbname, conf[kbname, "type"].name
             )
-
-        eh.register_action(
-            "OnTimeTick", doorpi.actions.CheckAction(self.self_check)
-        )
 
     def input(self, pinpath: str) -> bool:
         """Polls an input for its current value."""
