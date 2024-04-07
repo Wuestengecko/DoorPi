@@ -64,12 +64,10 @@ class TriggeredOutAction(OutAction):
         self._int.set()
 
     def __str__(self) -> str:
-        return (
-            f"Hold {self._pin} at {self._value} for {self._holdtime}s"
-            + f" or until {self._intpin} is pressed"
-            if self._intpin
-            else ""
-        )
+        value = f"Hold {self._pin} at {self._value} for {self._holdtime}s"
+        if self._intpin:
+            value += f" or until {self._intpin} is pressed"
+        return value
 
     def __repr__(self) -> str:
         return "".join(
