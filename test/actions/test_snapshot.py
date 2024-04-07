@@ -27,7 +27,9 @@ class TestURLSnapshotAction(SnapshotTestCase):
     def test_action(self, _, get):
         ac = snapshot.URLSnapshotAction("http://localhost")
         ac(EVENT_ID, EVENT_EXTRA)
-        get.assert_called_once_with("http://localhost", stream=True)
+        get.assert_called_once_with(
+            "http://localhost", stream=True, timeout=30
+        )
 
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
     def test_cleanup(self, _):

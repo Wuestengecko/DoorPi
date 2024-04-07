@@ -35,7 +35,7 @@ def setup(app: aiohttp.web.Application) -> None:
     aiohttp_jinja2.setup(
         app,
         loader=templates.DoorPiWebTemplateLoader(),
-        bytecode_cache=jinja2.FileSystemBytecodeCache(cachedir),
+        bytecode_cache=jinja2.FileSystemBytecodeCache(str(cachedir)),
         undefined=jinja2.StrictUndefined,
         enable_async=True,
     )
@@ -49,7 +49,7 @@ async def _resource(
     if path.suffix in parsable_file_extensions:
         return await _resource_template(request)
     else:
-        resource = templates.get_resource(path)
+        resource = templates.get_resource(request.path)
         return aiohttp.web.Response(body=resource[0], content_type=resource[1])
 
 

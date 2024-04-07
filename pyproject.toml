@@ -27,8 +27,11 @@ expected-line-ending-format = "LF"
 
 [tool.pylint.messages_control]
 disable = [
-  "too-many-ancestors",
+  "broad-exception-caught",
+  "global-statement",
+  "import-error",
   "no-else-return",
+  "too-many-ancestors",
 ]
 enable = [
   "c-extension-no-member",

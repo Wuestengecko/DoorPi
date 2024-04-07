@@ -10,25 +10,26 @@ import os
 import pathlib
 import signal
 import sys
+import threading
 import time
-from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, cast
 
 import doorpi
 import doorpi.actions.snapshot
 import doorpi.config
 import doorpi.event.handler
-import doorpi.keyboard
+import doorpi.keyboard.handler
 import doorpi.metadata
 import doorpi.sipphone
 import doorpi.status.status_class
 import doorpi.status.systemd
 import doorpi.web
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 DEADLY_SIGNALS_ABORT = 3
 
 if __name__ == "__main__":
-    raise Exception("use main.py to start DoorPi")
+    raise RuntimeError("Use 'python -m doorpi' to start DoorPi")
 
 
 class DoorPi:
@@ -100,10 +101,6 @@ class DoorPi:
             self._base_path = self.config["base_path"]
         except KeyError:
             self._base_path = None
-        self.dpsd = None  # type: ignore
-        self.event_handler = None  # type: ignore
-        self.keyboard = None  # type: ignore
-        self.sipphone = None  # type: ignore
         self.webserver = None
 
         self.__deadlysignals = 0

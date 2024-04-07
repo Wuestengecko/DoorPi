@@ -18,31 +18,23 @@ class DoorPiWebTemplateLoader(jinja2.BaseLoader):
         template: str,
     ) -> Tuple[str, Optional[str], Callable[[], bool]]:
         try:
-            _, resource = _get_resource(template, resources.read_text)
+            _, resource = _get_resource(template)
         except FileNotFoundError:
             raise jinja2.TemplateNotFound(template) from None
-        return (resource, None, lambda: False)
+        return (resource.decode("utf-8"), None, lambda: False)
 
 
-def get_resource(
-    path: Union[str, pathlib.PurePosixPath]
-) -> Tuple[bytes, Optional[str]]:
+def get_resource(path: str) -> Tuple[bytes, Optional[str]]:
     """Get a resource and its MIME type"""
-    name, resource = _get_resource(path, resources.read_binary)
+    name, resource = _get_resource(path)
     mime = mimetypes.guess_type(name, strict=False)
     return (resource, mime[0])
 
 
-def _get_resource(
-    path: Union[str, pathlib.PurePosixPath], load: Callable[[str, str], _T], /
-) -> Tuple[str, _T]:
-    path = pathlib.PurePosixPath("/", path)
-    if path.name.startswith((".", "_")):
+def _get_resource(path: str, /) -> Tuple[str, bytes]:
+    path = path.lstrip("/")
+    filename = path.rsplit("/", 1)[-1]
+    if filename.startswith((".", "_")):
         raise FileNotFoundError()
-    module = (__name__ + path.parent.as_posix().replace("/", ".")).rstrip(".")
-
-    try:
-        resource = load(module, path.name)
-    except ModuleNotFoundError:
-        raise FileNotFoundError() from None
-    return (path.name, resource)
+    file = resources.files(__name__) / path
+    return (filename, file.read_bytes())

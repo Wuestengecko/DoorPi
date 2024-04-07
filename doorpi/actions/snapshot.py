@@ -10,11 +10,16 @@ import doorpi
 
 from . import Action
 
+try:
+    import requests
+except ImportError:
+    pass
+
 LOGGER = logging.getLogger(__name__)
 DOORPI_SECTION = "DoorPi"
 
 
-class SnapshotAction(Action):
+class SnapshotAction(Action):  # pylint: disable=abstract-method
     """Base class for snapshotting actions."""
 
     @classmethod
@@ -66,16 +71,15 @@ class URLSnapshotAction(SnapshotAction):
     """Fetches a URL and saves it as snapshot."""
 
     def __init__(self, url: str) -> None:
-        import requests
+        if "requests" not in globals():
+            raise RuntimeError("Install 'requests' to enable URL snapshots")
 
         super().__init__()
 
         self.__url = url
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
-        import requests
-
-        response = requests.get(self.__url, stream=True)
+        response = requests.get(self.__url, stream=True, timeout=30)
         with self.get_next_path().open("wb") as output:
             for chunk in response.iter_content(1048576):  # 1 MiB chunks
                 output.write(chunk)

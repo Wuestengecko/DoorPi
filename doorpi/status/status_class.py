@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib
 import json
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 import doorpi.doorpi
 
@@ -52,10 +52,10 @@ class DoorPiStatus:
                 LOGGER.warning("Skipping unknown status module %s", module)
                 continue
             try:
-                getter_func = importlib.import_module(
+                mod = importlib.import_module(
                     f"doorpi.status.status_lib.{module}"
-                ).get  # type: ignore
-                self.dictionary[module] = getter_func(
+                )
+                self.dictionary[module] = mod.get(
                     doorpi_obj=doorpi_obj, name=name, value=value
                 )
             except Exception:  # pylint: disable=broad-except

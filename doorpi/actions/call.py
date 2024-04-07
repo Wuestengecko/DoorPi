@@ -39,7 +39,7 @@ class CallFromFileAction(Action):
             LOGGER.warning("File %s does not exist (yet?)", self.__filename)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
-        uri = self.__filename.read_text()
+        uri = self.__filename.read_text(encoding="locale")
         if not uri:
             raise ValueError(f"File {self.__filename} is empty")
         doorpi.INSTANCE.sipphone.call(uri)

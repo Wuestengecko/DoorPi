@@ -17,15 +17,11 @@ async def _control_trigger_event(
     try:
         ev_name = request.query["event"]
         ev_source = request.query["source"]
-        ev_extra = json.loads(request.query.get("extra", "null"))
+        ev_extra = json.loads(request.query.get("extra", "{}"))
     except (json.JSONDecodeError, KeyError) as err:
         raise aiohttp.web.HTTPBadRequest() from err
 
-    if (
-        request.can_read_body
-        or ev_extra is not None
-        and not isinstance(ev_extra, dict)
-    ):
+    if request.can_read_body or not isinstance(ev_extra, dict):
         raise aiohttp.web.HTTPBadRequest()
 
     doorpi.INSTANCE.event_handler.fire_event(
@@ -177,10 +173,10 @@ async def _status(
 
 
 class SetAsTupleJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, (set, frozenset)):
-            return tuple(obj)
-        return super().default(obj)
+    def default(self, o: object) -> object:
+        if isinstance(o, (set, frozenset)):
+            return tuple(o)
+        return super().default(o)
 
 
 json_encoder = SetAsTupleJSONEncoder()

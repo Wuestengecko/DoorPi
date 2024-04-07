@@ -55,6 +55,7 @@ class IPSConnector:
             data=payload,
             headers={"Content-Type": "application/json"},
             auth=(self.config["username"], self.config["password"]),
+            timeout=30,
         )
 
         return json.loads(response.content.decode("utf-8"))

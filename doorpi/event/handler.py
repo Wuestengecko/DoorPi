@@ -1,5 +1,4 @@
 import collections
-import itertools
 import logging
 import random
 import string
@@ -124,7 +123,7 @@ class EventHandler:
             )
 
     def fire_event(
-        self, event: str, source: str, *, extra: Dict[str, Any] = None
+        self, event: str, source: str, *, extra: Dict[str, Any] | None = None
     ) -> None:
         """Fire an event asynchronously"""
         if not self.__active:
@@ -137,7 +136,7 @@ class EventHandler:
         ).start()
 
     def fire_event_sync(
-        self, event: str, source: str, *, extra: Dict[str, Any] = None
+        self, event: str, source: str, *, extra: Dict[str, Any] | None = None
     ) -> None:
         """Fire an event synchronously"""
         if not self.__active:
@@ -306,6 +305,7 @@ class EventHandler:
         Args:
             oneshot: Only execute the action once and remove it afterwards
         """
+        del oneshot  # TODO
         action_obj: Optional[ActionCallable]
         if isinstance(action, str):
             action_obj = doorpi.actions.from_string(action)

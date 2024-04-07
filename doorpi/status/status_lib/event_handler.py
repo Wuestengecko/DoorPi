@@ -1,5 +1,5 @@
 import operator
-from typing import Any, Dict, Iterable
+from typing import Any, Callable, Dict, Iterable
 
 import doorpi.doorpi
 
@@ -10,7 +10,7 @@ def get(
     value: Iterable[str],
 ) -> Dict[str, Any]:
     del value
-    status_getters = {
+    status_getters: Dict[str, Callable[[Any], Any]] = {
         "sources": operator.attrgetter("sources"),
         "events": operator.attrgetter("events"),
         "events_by_source": lambda eh: {

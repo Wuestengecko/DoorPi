@@ -5,6 +5,7 @@ import contextlib
 import itertools
 import logging
 import os
+import pathlib
 from importlib import resources
 from typing import (
     Any,
@@ -44,7 +45,7 @@ class Configuration:
                 logger.debug("Loading defs from %s", file.name)
                 self.attach_defs(toml.loads(file.read_text()))
 
-    def load(self, path: Union[str, os.PathLike, TextIO]) -> None:
+    def load(self, path: Union[str, pathlib.Path, TextIO]) -> None:
         """Replace configuration by loading from the given TOML file"""
         self.__values = {}
         subconf = list(toml.load(path).items())
@@ -60,10 +61,8 @@ class Configuration:
 
     def save(self, path: Union[str, os.PathLike, TextIO]) -> None:
         """Save the configuration into the given TOML file"""
-        # Erroneous "Only @runtime_checkable protocols can be used with
-        # instance and class checks"
-        if isinstance(path, (str, os.PathLike)):  # type: ignore[misc]
-            ctx: ContextManager[TextIO] = open(path, "w")
+        if isinstance(path, (str, os.PathLike)):
+            ctx: ContextManager[TextIO] = open(path, "w", encoding="locale")
         else:
             ctx = contextlib.nullcontext(path)
         with ctx as file:

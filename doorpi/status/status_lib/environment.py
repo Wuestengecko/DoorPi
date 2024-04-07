@@ -1,12 +1,11 @@
 import importlib
 import logging
 import time
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, cast
 
 import doorpi.doorpi
 
-LOGGER: doorpi.DoorPiLogger
-LOGGER = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 DEFAULT_MODULE_ATTR = frozenset(
     {
         "__doc__",
@@ -71,7 +70,7 @@ def load_module_status(module_name: str) -> Dict[str, Any]:
     LOGGER.debug("Parsing requirements texts for %s", module_name)
     module: Dict[str, Any] = importlib.import_module(
         f"doorpi.status.requirements_lib.{module_name}"
-    ).REQUIREMENT  # type: ignore[attr-defined]
+    ).REQUIREMENT
 
     # parse reStructuredText descriptions to HTML:
     # the top-level module.text_description and _configuration
@@ -137,9 +136,9 @@ def get(
 
     status = {}
     for name_requested in name:
-        for possible_name in REQUIREMENTS_DOORPI:
+        for possible_name, req_value in REQUIREMENTS_DOORPI.items():
             if name_requested in possible_name:
-                status[possible_name] = REQUIREMENTS_DOORPI[possible_name]
+                status[possible_name] = req_value
 
     return status
 

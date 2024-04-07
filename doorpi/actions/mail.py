@@ -56,7 +56,7 @@ class MailAction(Action):
         if text.startswith("/"):
             # Read actual text from file
             self.__textfile: Optional[str] = text
-            with open(text, "rt") as textfile:
+            with open(text, "rt", encoding="locale") as textfile:
                 self.__text = textfile.read()
         else:
             self.__textfile = None

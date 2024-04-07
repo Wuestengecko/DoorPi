@@ -121,7 +121,7 @@ def main() -> None:
     try:
         os.chdir(instance.base_path)
         instance.prepare()
-    except BaseException as err:
+    except BaseException:
         LOGGER.error("*** An error occured while preparing to start")
         raise
 

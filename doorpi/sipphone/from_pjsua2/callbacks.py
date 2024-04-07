@@ -21,7 +21,7 @@ class AccountCallback(pj.Account):
     def __init__(self) -> None:
         pj.Account.__init__(self)
 
-    # pylint: disable=arguments-differ
+    # pylint: disable-next=arguments-renamed
     def onIncomingCall(self, iprm: pj.OnIncomingCallParam) -> None:
         sp: glue.Pjsua2 = doorpi.INSTANCE.sipphone  # type: ignore
         call = CallCallback(self, iprm.callId)

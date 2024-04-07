@@ -39,7 +39,7 @@ class TriggeredOutAction(OutAction):
         startval: str,
         stopval: str,
         holdtime: str,
-        intpin: str = None,
+        intpin: str | None = None,
         /,
     ) -> None:
         super().__init__(pin, startval)

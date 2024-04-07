@@ -10,7 +10,7 @@ def get(
     value: Iterable[str],
 ) -> Dict[str, Any]:
     del value
-    status_getters: Dict[str, Callable[[doorpi.web.DoorPiWeb], Any]] = {
+    status_getters: Dict[str, Callable[[Any], Any]] = {
         "config_status": lambda _: {"infos": [], "warnings": [], "errors": []},
         "session_ids": lambda ws: list(ws.sessions.sessions),
         "sessions": operator.attrgetter("sessions.sessions"),

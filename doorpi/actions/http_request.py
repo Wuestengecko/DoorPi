@@ -26,7 +26,7 @@ class HTTPRequestAction(Action):
             raise ValueError(f"Invalid scheme: {url.scheme}")
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
-        resp = requests.get(self.__url)
+        resp = requests.get(self.__url, timeout=30)
         LOGGER.info(
             "[%s] Server response: %d %s",
             event_id,

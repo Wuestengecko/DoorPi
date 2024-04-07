@@ -21,7 +21,8 @@ class StatusfileAction(Action):
 
         self.__filename.parent.mkdir(parents=True, exist_ok=True)
         # create / truncate the file; also makes sure we have write permission
-        self.__filename.open("w").close()
+        with self.__filename.open("wb"):
+            pass
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
         content = doorpi.INSTANCE.parse_string(self.__content)
@@ -39,7 +40,7 @@ class StatusfileAction(Action):
                 self.__filename,
             )
 
-        self.__filename.write_text(content)
+        self.__filename.write_text(content, encoding="locale")
 
     def __str__(self) -> str:
         return f"Write current status into {self.__filename}"

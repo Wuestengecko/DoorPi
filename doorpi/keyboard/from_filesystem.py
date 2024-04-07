@@ -53,7 +53,7 @@ value, no event will be triggered. The same applies for "low" values.
 """
 import logging
 import pathlib
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 import watchdog.events
 import watchdog.observers
@@ -161,10 +161,9 @@ class FilesystemKeyboard(
     def output(self, pin: str, value: Any) -> bool:
         super().output(pin, value)
         LOGGER.debug("%s: Setting pin %s to %s", self.name, pin, value)
-        if self.__write_file(self.__base_path_output / pin, value):
-            self._outputs[pin] = value
-            return True
-        return False
+        self.__write_file(self.__base_path_output / pin, value)
+        self._outputs[pin] = value
+        return True
 
     def __read_file(self, pin: pathlib.Path) -> Optional[bool]:
         try:
@@ -183,9 +182,7 @@ class FilesystemKeyboard(
             return None
         return self._normalize(valwords[0])
 
-    def __write_file(
-        self, pin: pathlib.Path, value: Any = False
-    ) -> Literal[True]:
+    def __write_file(self, pin: pathlib.Path, value: Any = False) -> None:
         value = self._normalize(value)
         try:
             pin.write_text("1\n" if value else "0\n")
@@ -197,7 +194,6 @@ class FilesystemKeyboard(
                 type(err).__name__,
                 err,
             )
-        return True
 
     def on_modified(self, event: watchdog.events.FileSystemEvent) -> None:
         "Called by the watchdog library when an inotify event was triggered"
