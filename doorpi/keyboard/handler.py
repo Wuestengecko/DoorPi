@@ -146,3 +146,9 @@ class KeyboardHandler:
             raise ValueError(f"Unknown keyboard name {kbname!r}")
 
         return kb, kbname, pin
+
+    def get_keyboard(
+        self, kbname: str
+    ) -> doorpi.keyboard.abc.AbstractKeyboard:
+        """Retrieve a keyboard instance by its name."""
+        return self.__keyboards[kbname]
