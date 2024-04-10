@@ -327,13 +327,12 @@ class DoorPi:
                 mapping_table[key.upper()] = val
 
         if self.config:
-            mapping_table.update(
-                {
-                    "LAST_SNAPSHOT": str(
-                        doorpi.actions.snapshot.SnapshotAction.list_all()[-1]
-                    ),
-                }
-            )
+            snapshots = doorpi.actions.snapshot.SnapshotAction.list_all()
+            if snapshots:
+                last_snapshot = os.fspath(snapshots[-1])
+            else:
+                last_snapshot = "- no snapshots -"
+            mapping_table.update({"LAST_SNAPSHOT": last_snapshot})
 
         if self.keyboard:
             mapping_table.update(self.keyboard.enumerate_outputs())
