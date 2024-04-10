@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""DoorPi Setup"""
+"""DoorPi Setup."""
 
 import pathlib
 import sys
@@ -12,7 +12,7 @@ ETC = "/etc" if sys.prefix == "/usr" else "etc"
 
 
 class InstallHook(setuptools.command.install.install):
-    """Hook for ``install`` command that processes template files (*.in)"""
+    """Hook for ``install`` command that processes template files (*.in)."""
 
     def run(self):
         datapath = BASE_PATH / "data"

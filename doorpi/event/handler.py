@@ -4,17 +4,8 @@ import random
 import string
 import threading
 import time
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from collections.abc import Callable, Mapping
+from typing import Any, Union
 
 import doorpi.actions
 import doorpi.event
@@ -37,10 +28,10 @@ def generate_id() -> str:
 class EventHandler:
     """The event handler and action dispatcher."""
 
-    actions: Dict[str, List[ActionCallable]]
-    events: Dict[str, Set[str]]
-    extra_info: Dict[str, Any]
-    sources: List[str]
+    actions: dict[str, list[ActionCallable]]
+    events: dict[str, set[str]]
+    extra_info: dict[str, Any]
+    sources: list[str]
 
     __active: bool
 
@@ -70,17 +61,17 @@ class EventHandler:
                 self.register_action(f"OnDTMF_{seq}", action)
 
     def destroy(self) -> None:
-        """Shut down the event handler"""
+        """Shut down the event handler."""
         self.__active = False
         self.log.destroy()
 
     @property
-    def event_history(self) -> Tuple[log.EventLogEntry, ...]:
+    def event_history(self) -> tuple[log.EventLogEntry, ...]:
         return self.log.get_event_log()
 
     @property
-    def threads(self) -> List[threading.Thread]:
-        """List event threads managed by the handler"""
+    def threads(self) -> list[threading.Thread]:
+        """List event threads managed by the handler."""
         return [
             t
             for t in threading.enumerate()
@@ -89,21 +80,21 @@ class EventHandler:
 
     @property
     def idle(self) -> bool:
-        """Return whether the handler is currently idle"""
+        """Return whether the handler is currently idle."""
         return not self.threads
 
-    def get_events_by_source(self, source: str) -> Set[str]:
-        """Group all known events by the sources that can fire them"""
+    def get_events_by_source(self, source: str) -> set[str]:
+        """Group all known events by the sources that can fire them."""
         return {ev for ev in self.events if source in self.events[ev]}
 
     def register_source(self, source: str) -> None:
-        """Register a new event source"""
+        """Register a new event source."""
         if source not in self.sources:
             self.sources.append(source)
             LOGGER.debug("Added event source %s", source)
 
     def register_event(self, event: str, source: str) -> None:
-        """Register an event to be fired from the named event source"""
+        """Register an event to be fired from the named event source."""
         suppress_logs = _suppress_logs(event)
         if not suppress_logs:
             LOGGER.debug("Registering event %s with source %s", event, source)
@@ -123,9 +114,9 @@ class EventHandler:
             )
 
     def fire_event(
-        self, event: str, source: str, *, extra: Dict[str, Any] | None = None
+        self, event: str, source: str, *, extra: dict[str, Any] | None = None
     ) -> None:
-        """Fire an event asynchronously"""
+        """Fire an event asynchronously."""
         if not self.__active:
             return
         threading.Thread(
@@ -136,9 +127,9 @@ class EventHandler:
         ).start()
 
     def fire_event_sync(
-        self, event: str, source: str, *, extra: Dict[str, Any] | None = None
+        self, event: str, source: str, *, extra: dict[str, Any] | None = None
     ) -> None:
-        """Fire an event synchronously"""
+        """Fire an event synchronously."""
         if not self.__active:
             return
 
@@ -254,7 +245,7 @@ class EventHandler:
         return True
 
     def unregister_event(self, event: str, source: str) -> None:
-        """Unregister an event from a source"""
+        """Unregister an event from a source."""
         if self._unregister_event(event, source):
             self.unregister_source(source, force=None)
 
@@ -262,11 +253,12 @@ class EventHandler:
         self,
         source: str,
         *,
-        force: Optional[bool] = False,
+        force: bool | None = False,
     ) -> None:
-        """Unregister an event source
+        """Unregister an event source.
 
         Args:
+            source: The source to unregister.
             force: If True, unregisters a source even when it still has
                 events associated.
         """
@@ -300,13 +292,15 @@ class EventHandler:
         *,
         oneshot: bool = False,
     ) -> None:
-        """Register an action to execute when the ``event`` fires
+        """Register an action to execute when the ``event`` fires.
 
         Args:
+            event: The event name to register for.
+            action: The action to execute when the event fires.
             oneshot: Only execute the action once and remove it afterwards
         """
         del oneshot  # TODO
-        action_obj: Optional[ActionCallable]
+        action_obj: ActionCallable | None
         if isinstance(action, str):
             action_obj = doorpi.actions.from_string(action)
         elif callable(action):

@@ -1,7 +1,9 @@
-"""Actions that perform requests to third party servers: http_request"""
+"""Actions that perform requests to third party servers: http_request."""
+
 import logging
 import urllib.parse
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import requests
 

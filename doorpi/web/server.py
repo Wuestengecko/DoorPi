@@ -1,14 +1,14 @@
-"""The server component of DoorPiWeb"""
+"""The server component of DoorPiWeb."""
+
 import asyncio
 import logging
 import os
 import socket
-import typing as T
+from collections.abc import Awaitable, Callable
 
 import aiohttp.web
 
 import doorpi.metadata
-import doorpi.util
 import doorpi.web.api
 import doorpi.web.auth
 import doorpi.web.resources
@@ -17,13 +17,13 @@ SD_LISTEN_FDS_START = 3  # defined in <systemd/sd-daemon.h>
 
 logger = logging.getLogger(__name__)
 
-RequestHandler = T.Callable[
-    [aiohttp.web.Request], T.Awaitable[aiohttp.web.StreamResponse]
+RequestHandler = Callable[
+    [aiohttp.web.Request], Awaitable[aiohttp.web.StreamResponse]
 ]
 
 
 async def run() -> None:
-    """Start the web server thread"""
+    """Start the web server thread."""
     cfg = doorpi.INSTANCE.config.view("web")
     shutdown = asyncio.Event()
 

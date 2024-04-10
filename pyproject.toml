@@ -135,7 +135,10 @@ disallow_untyped_defs = false
 # Untyped 3rd party libs
 module = [
   "RPi.*",
+  "aiohttp.*",
+  "aiohttp_jinja2.*",
   "aiohttp_session.*",
+  "jinja2.*",
   "nfc.*",
   "picamera.*",
   "pifacecommon.*",
@@ -147,6 +150,12 @@ module = [
 ]
 ignore_missing_imports = true
 
+[tool.pydocstyle]
+convention = "google"
+add-ignore = [
+  "D1",   # Missing docstring
+]
+
 [tool.pylint.basic]
 variable-rgx = '[a-z][a-z0-9_]*'
 
@@ -156,9 +165,20 @@ expected-line-ending-format = "LF"
 [tool.pylint.messages_control]
 disable = [
   "broad-exception-caught",
+  "disallowed-name",
   "global-statement",
+  "invalid-name",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "missing-module-docstring",
+  "no-else-raise",
   "no-else-return",
+  "too-few-public-methods",
   "too-many-ancestors",
+  "too-many-arguments",
+  "too-many-branches",
+  "too-many-instance-attributes",
+  "too-many-return-statements",
 
   # Handled by mypy
   "import-error",

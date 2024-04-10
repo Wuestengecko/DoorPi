@@ -1,10 +1,12 @@
-"""Actions related to taking snapshots: snap_url, snap_picam"""
+"""Actions related to taking snapshots: snap_url, snap_picam."""
+
 # pylint: disable=import-outside-toplevel
 
 import datetime
 import logging
 import pathlib
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import doorpi
 
@@ -24,12 +26,11 @@ class SnapshotAction(Action):  # pylint: disable=abstract-method
 
     @classmethod
     def cleanup(cls) -> None:
-        """Cleans out the snapshot directory
+        """Cleans out the snapshot directory.
 
         The oldest snapshots are deleted until the directory only
         contains as many snapshots as set in the configuration.
         """
-
         keep = doorpi.INSTANCE.config["snapshots.keep"]
         if keep <= 0:
             return
@@ -44,7 +45,6 @@ class SnapshotAction(Action):  # pylint: disable=abstract-method
     @staticmethod
     def get_base_path() -> pathlib.Path:
         """Fetches the snapshot directory path from the configuration."""
-
         path = doorpi.INSTANCE.config["snapshots.directory"]
         if not path:
             raise ValueError("snapshot_path must not be empty")
@@ -55,14 +55,13 @@ class SnapshotAction(Action):  # pylint: disable=abstract-method
     @classmethod
     def get_next_path(cls) -> pathlib.Path:
         """Computes the next snapshot's path."""
-
         path = cls.get_base_path() / datetime.datetime.now().strftime(
             "%Y-%m-%d %H:%M:%S.jpg"
         )
         return path
 
     @classmethod
-    def list_all(cls) -> List[pathlib.Path]:
+    def list_all(cls) -> list[pathlib.Path]:
         """Lists all snapshot files in the snapshot directory."""
         return sorted(f for f in cls.get_base_path().iterdir() if f.is_file())
 

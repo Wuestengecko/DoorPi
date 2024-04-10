@@ -1,11 +1,12 @@
-"""File I/O related stuff, i.e. the dial tone player and call recorder"""
+"""File I/O related stuff, i.e. the dial tone player and call recorder."""
+
 # pylint: disable=protected-access, invalid-name
 import datetime
 import gc
 import logging
 import pathlib
 from importlib import resources
-from typing import Optional, Union, cast
+from typing import cast
 
 import pjsua2 as pj
 
@@ -20,12 +21,12 @@ class DialTonePlayer:
     """Plays the dial tone while dialing."""
 
     __slots__ = ("_level", "_player", "_target")
-    _player: Optional[pj.AudioMediaPlayer]
-    _target: Optional[pj.AudioMedia]
+    _player: pj.AudioMediaPlayer | None
+    _target: pj.AudioMedia | None
     _level: float
 
     def __init__(
-        self, filename: Union[str, pathlib.Path, None], loudness: float
+        self, filename: str | pathlib.Path | None, loudness: float
     ) -> None:
         eh = doorpi.INSTANCE.event_handler
 
@@ -59,7 +60,7 @@ class DialTonePlayer:
             self._player = None
 
     def start(self) -> None:
-        """Start playing the dial tone"""
+        """Start playing the dial tone."""
         if self._player is None:
             LOGGER.error("Not playing dial tone due to previous errors")
             return
@@ -71,7 +72,7 @@ class DialTonePlayer:
         self._player.startTransmit(self._target)
 
     def stop(self) -> None:
-        """Stop the dial tone"""
+        """Stop the dial tone."""
         if self._player is None or self._target is None:
             return
 
@@ -81,11 +82,11 @@ class DialTonePlayer:
 
 
 class CallRecorder:
-    """Records calls"""
+    """Records calls."""
 
     def __init__(
         self,
-        path: Optional[pathlib.Path],
+        path: pathlib.Path | None,
         early: bool,
         keep: int,
     ) -> None:
@@ -93,7 +94,7 @@ class CallRecorder:
         self.__early = early
         self.__keep = keep
 
-        self.__recorder: Optional[pj.AudioMediaRecorder] = None
+        self.__recorder: pj.AudioMediaRecorder | None = None
 
         eh = doorpi.INSTANCE.event_handler
         eh.register_action("OnCallOutgoing_S", CallbackAction(self.startEarly))
@@ -104,7 +105,7 @@ class CallRecorder:
             LOGGER.debug("Call recording destination: %s", self.__path)
 
     def start(self) -> None:
-        """Start recording into a new file"""
+        """Start recording into a new file."""
         if self.__recorder is None:
             if not self.__path:
                 return
@@ -144,12 +145,12 @@ class CallRecorder:
             )
 
     def startEarly(self) -> None:
-        """Start recording if configured to record while dialing"""
+        """Start recording if configured to record while dialing."""
         if self.__early:
             self.start()
 
     def stop(self) -> None:
-        """Stop an ongoing recording, if any"""
+        """Stop an ongoing recording, if any."""
         if self.__recorder is not None:
             LOGGER.debug("Stopping call recorder")
             self.__recorder = None
@@ -158,7 +159,7 @@ class CallRecorder:
             gc.collect()
 
     def cleanup(self) -> None:
-        """Clean up old recordings"""
+        """Clean up old recordings."""
         if not self.__path:
             return
         if self.__keep <= 0:

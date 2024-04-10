@@ -1,4 +1,4 @@
-"""rdm6300 RFID keyboard module
+"""Rdm6300 RFID keyboard module.
 
 > **Warning**: This keyboard module has not yet been extensively
 > tested. Use at your own risk.
@@ -61,6 +61,7 @@ and the RDM's RX (header P1 pin 2) to the Pi's UART TXD (pin 8).
 >
 > Similar precaution is not needed for PI_TXD -> RDM_RX.
 """
+
 import logging
 from typing import Any
 
@@ -114,13 +115,13 @@ class RDM6300Keyboard(SeriallyConnectedKeyboard):
 
 
 def verify_crc(string: bytes) -> bool:
-    """Verify the embedded checksum in the passed string"""
+    """Verify the embedded checksum in the passed string."""
     crc = int(string[11:13], base=16)
     return crc == calculate_crc(string)
 
 
 def calculate_crc(string: bytes) -> int:
-    """Calculate the checksum of the passed string"""
+    """Calculate the checksum of the passed string."""
     crc = 0
     for i in range(1, 10, 2):
         crc ^= int(string[i : i + 2], base=16)

@@ -1,4 +1,5 @@
 """The main DoorPi module housing the DoorPi class' implementation."""
+
 from __future__ import annotations
 
 import argparse
@@ -12,7 +13,8 @@ import signal
 import sys
 import threading
 import time
-from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, cast
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Any, cast
 
 import doorpi
 import doorpi.actions.snapshot
@@ -40,9 +42,9 @@ class DoorPi:
     dpsd: doorpi.status.systemd.DoorPiSD
     keyboard: doorpi.keyboard.handler.KeyboardHandler
     sipphone: doorpi.sipphone.abc.AbstractSIPPhone
-    webserver: Optional[threading.Thread]
+    webserver: threading.Thread | None
 
-    _base_path: Optional[pathlib.Path]
+    _base_path: pathlib.Path | None
     __deadlysignals: int
     __last_tick: float
     __prepared: bool
@@ -60,7 +62,7 @@ class DoorPi:
 
     def get_status(
         self,
-        modules: Optional[Sequence[str]] = None,
+        modules: Sequence[str] | None = None,
         value: Sequence[str] = (),
         name: Sequence[str] = (),
     ) -> doorpi.status.status_class.DoorPiStatus:

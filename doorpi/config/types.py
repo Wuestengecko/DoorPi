@@ -1,4 +1,5 @@
-"""Classes that handle different configuration value types"""
+"""Classes that handle different configuration value types."""
+
 # pylint: disable=missing-function-docstring, too-few-public-methods
 from __future__ import annotations
 
@@ -9,14 +10,15 @@ import enum
 import importlib
 import math
 import pathlib
-from typing import Any, Dict, Mapping, Sequence, Tuple, Type
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 
-def gettype(typename: str) -> Type[ValueType]:
+def gettype(typename: str) -> type[ValueType]:
     return _types[typename]
 
 
-def infertype(default: Any) -> Type[ValueType]:
+def infertype(default: Any) -> type[ValueType]:
     # pylint: disable=too-many-return-statements
     if isinstance(default, bool):
         return Bool
@@ -39,7 +41,7 @@ def infertype(default: Any) -> Type[ValueType]:
 
 
 class ValueType(metaclass=abc.ABCMeta):
-    """ABC for value types"""
+    """ABC for value types."""
 
     __slots__ = ()
 
@@ -48,16 +50,16 @@ class ValueType(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def insertcast(self, value: Any) -> Any:
-        """Cast ``value`` so it can be inserted into the configuration dict"""
+        """Cast ``value`` so it can be inserted into the configuration dict."""
 
     def querycast(self, value: Any) -> Any:
-        """Cast ``value`` after retrieving it from the configuration dict"""
+        """Cast ``value`` after retrieving it from the configuration dict."""
         del self
         return value
 
 
 class Anything(ValueType):
-    """Any value"""
+    """Any value."""
 
     __slots__ = ()
 
@@ -66,7 +68,7 @@ class Anything(ValueType):
 
 
 class Int(ValueType):
-    """An integer number (1, 2, -5, etc.)"""
+    """An integer number (1, 2, -5, etc.)."""
 
     __slots__ = ("_min", "_max")
 
@@ -84,7 +86,7 @@ class Int(ValueType):
 
 
 class Float(ValueType):
-    """A floating point number (1.2, -7.9, etc.)"""
+    """A floating point number (1.2, -7.9, etc.)."""
 
     __slots__ = ("_min", "_max")
 
@@ -123,7 +125,7 @@ class Bool(ValueType):
 
 
 class String(ValueType):
-    """A string of characters"""
+    """A string of characters."""
 
     __slots__ = ()
 
@@ -146,11 +148,11 @@ class String(ValueType):
 
 
 class Password(String):
-    """A string of characters that should not be shown to the user"""
+    """A string of characters that should not be shown to the user."""
 
 
 class Date(ValueType):
-    """A date (without time)"""
+    """A date (without time)."""
 
     __slots__ = ()
 
@@ -163,7 +165,7 @@ class Date(ValueType):
 
 
 class Time(ValueType):
-    """A time, with or without timezone"""
+    """A time, with or without timezone."""
 
     __slots__ = ()
 
@@ -182,7 +184,7 @@ class Time(ValueType):
 
 
 class DateTime(ValueType):
-    """A date and time, with or without timezone"""
+    """A date and time, with or without timezone."""
 
     __slots__ = ()
 
@@ -193,7 +195,7 @@ class DateTime(ValueType):
 
 
 class List(ValueType):
-    """A list of values"""
+    """A list of values."""
 
     __slots__ = ("_membertype",)
 
@@ -204,19 +206,19 @@ class List(ValueType):
             raise ValueError("Cannot define a list of lists")
         self._membertype = gettype(membertype)(name, keydef)
 
-    def insertcast(self, value: Any) -> Tuple[Any, ...]:
+    def insertcast(self, value: Any) -> tuple[Any, ...]:
         if not isinstance(value, collections.abc.Iterable) or isinstance(
             value, str
         ):
             value = (value,)
         return tuple(self._membertype.insertcast(v) for v in value)
 
-    def querycast(self, value: Sequence[Any]) -> Tuple[Any, ...]:
+    def querycast(self, value: Sequence[Any]) -> tuple[Any, ...]:
         return tuple(self._membertype.querycast(v) for v in value)
 
 
 class Enum(ValueType):
-    """One of a set of values"""
+    """One of a set of values."""
 
     __slots__ = ("_enum",)
 
@@ -232,8 +234,7 @@ class Enum(ValueType):
         module = importlib.import_module(keydef["_enumcls"][:lastdot])
         self._enum = getattr(module, enumname)
         if not (
-            isinstance(self._enum, type)
-            and issubclass(self._enum, enum.Enum)
+            isinstance(self._enum, type) and issubclass(self._enum, enum.Enum)
         ):
             raise ValueError(
                 f"enumcls is not an Enum subclass: {keydef['_enumcls']!r}"
@@ -257,7 +258,7 @@ class Enum(ValueType):
 
 
 class Path(ValueType):
-    """A path in the filesystem"""
+    """A path in the filesystem."""
 
     __slots__ = ()
 
@@ -272,7 +273,7 @@ class Path(ValueType):
         return value.expanduser()
 
 
-_types: Dict[str, Type[ValueType]] = {
+_types: dict[str, type[ValueType]] = {
     "any": Anything,
     "int": Int,
     "float": Float,

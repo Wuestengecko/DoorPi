@@ -1,3 +1,3 @@
-from typing import Any, Dict
+from typing import Any
 
-REQUIREMENT: Dict[str, Any] = {}
+REQUIREMENT: dict[str, Any] = {}

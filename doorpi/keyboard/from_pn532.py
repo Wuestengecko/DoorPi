@@ -1,4 +1,5 @@
-"""PN532 NFC keyboard module
+# noqa: D405, D411, D416
+"""PN532 NFC keyboard module.
 
 > **Warning**: This keyboard module has not yet been extensively
 > tested. Use at your own risk.
@@ -87,11 +88,12 @@ you will also need the libnfc and nfcpy for this to work
    sudo cp -r nfc /usr/local/lib/python2.7/dist-packages/nfc   <--- CHECKEN!
 /TODO
 """
+
 import datetime
 import logging
 import re
 import threading
-from typing import Any, Optional
+from typing import Any
 
 import nfc  # pylint: disable=import-error
 
@@ -109,12 +111,11 @@ class PN532Keyboard(AbstractKeyboard):
             "OnTagUnknown", self._event_source
         )
 
-        self.__device = "tty:{}:pn532".format(
-            re.sub(r"^/dev/tty", "", self.config["port"])
-        )
+        port = re.sub(r"^/dev/tty", "", self.config["port"])
+        self.__device = f"tty:{port}:pn532"
         self.__frontend = nfc.ContactlessFrontend(self.__device)
 
-        self.__exception: Optional[Exception] = None
+        self.__exception: Exception | None = None
         self.__shutdown = False
 
         self.__thread = threading.Thread(target=self.pn532_read)
@@ -136,7 +137,7 @@ class PN532Keyboard(AbstractKeyboard):
             )
 
     def pn532_read(self) -> None:
-        """The keyboard's main loop; runs as thread"""
+        """The keyboard's main loop; runs as thread."""
         try:
             while not self.__shutdown:
                 self.__frontend.connect(rdwr={"on-connect": self.on_connect})
@@ -152,7 +153,7 @@ class PN532Keyboard(AbstractKeyboard):
 
         self.last_key_time = now
         tag = str(tag)
-        id_ = tag.split("ID=")[-1]
+        id_ = tag.rsplit("ID=", 1)[-1]
         LOGGER.info("%s: Tag connected: %r, ID: %r", self.name, tag, id_)
         if id_ in self._inputs:
             self._fire_event("OnKeyPressed", id_)

@@ -1,4 +1,5 @@
-from typing import Any, Dict, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import doorpi.doorpi
 
@@ -7,7 +8,7 @@ def get(
     doorpi_obj: doorpi.doorpi.DoorPi,
     name: Iterable[str],
     value: Iterable[str],
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     status_getters = {
         "name": lambda kb: "Keyboard handler",
         "input": lambda kb: {pin: kb.input(pin) for pin in value},

@@ -1,7 +1,8 @@
 """This module contains the "glue class", which binds PJSUA2 to DoorPi."""
+
 import logging
 import threading
-from typing import Any, List, Optional
+from typing import Any
 
 import pjsua2 as pj
 
@@ -58,16 +59,16 @@ class Pjsua2(AbstractSIPPhone):
             eh.register_event(f"OnDTMF_{dtmf}", EVENT_SOURCE)
 
         # outgoing calls that are not yet connected
-        self._waiting_calls: List[str] = []
+        self._waiting_calls: list[str] = []
         # outgoing calls that are currently ringing
-        self._ringing_calls: List[pj.Call] = []
+        self._ringing_calls: list[pj.Call] = []
         self._call_lock = threading.RLock()
-        self._logwriter: Optional[Any] = None
-        self.current_call: Optional[pj.Call] = None
-        self.dialtone: Optional[fileio.DialTonePlayer] = None
-        self.recorder: Optional[fileio.CallRecorder] = None
+        self._logwriter: Any | None = None
+        self.current_call: pj.Call | None = None
+        self.dialtone: fileio.DialTonePlayer | None = None
+        self.recorder: fileio.CallRecorder | None = None
 
-        self._worker: Optional[worker.Worker] = None
+        self._worker: worker.Worker | None = None
         fire_event("OnSIPPhoneCreate", async_only=True)
         eh.register_action("OnShutdown", CallbackAction(self.stop))
         eh.register_action(
@@ -160,7 +161,6 @@ class Pjsua2(AbstractSIPPhone):
         Raises: ValueError if the canonicalized URI is still not valid
         Returns: The given URI, canonicalized as "sip:username@host.com"
         """
-
         if not uri:
             raise ValueError("Cannot canonicalize empty URI")
         canonical_uri = uri

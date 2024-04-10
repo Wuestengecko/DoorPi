@@ -1,7 +1,8 @@
 import importlib
 import logging
 import time
-from typing import Any, Dict, Iterable, cast
+from collections.abc import Iterable
+from typing import Any, cast
 
 import doorpi.doorpi
 
@@ -26,7 +27,6 @@ except ModuleNotFoundError:
     def rsttohtml(rst: str) -> str:
         return f"<pre>{rst}</pre>"
 
-
 else:
 
     def rsttohtml(rst: str) -> str:
@@ -37,7 +37,7 @@ else:
         )["fragment"]
 
 
-def check_module_status(module: Dict[str, Any]) -> Dict[str, Any]:
+def check_module_status(module: dict[str, Any]) -> dict[str, Any]:
     module["is_fulfilled"] = not module.get("fulfilled_with_one")
     for module_name in module["libraries"]:
         status = {}
@@ -66,9 +66,9 @@ def check_module_status(module: Dict[str, Any]) -> Dict[str, Any]:
     return module
 
 
-def load_module_status(module_name: str) -> Dict[str, Any]:
+def load_module_status(module_name: str) -> dict[str, Any]:
     LOGGER.debug("Parsing requirements texts for %s", module_name)
-    module: Dict[str, Any] = importlib.import_module(
+    module: dict[str, Any] = importlib.import_module(
         f"doorpi.status.requirements_lib.{module_name}"
     ).REQUIREMENT
 
@@ -129,7 +129,7 @@ def get(
     doorpi_obj: doorpi.doorpi.DoorPi,
     name: Iterable[str],
     value: Iterable[str],
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     del doorpi_obj, value
     if not name:
         name = [""]

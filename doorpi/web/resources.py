@@ -1,4 +1,5 @@
-"""DoorPiWeb handlers for resources"""
+"""DoorPiWeb handlers for resources."""
+
 import logging
 import os
 import pathlib
@@ -18,7 +19,7 @@ parsable_file_extensions = {".html"}
 
 
 def setup(app: aiohttp.web.Application) -> None:
-    """Setup the aiohttp_jinja2 environment"""
+    """Setup the aiohttp_jinja2 environment."""
     if sys.platform == "linux":
         try:
             cachedir = pathlib.Path(os.environ["XDG_CACHE_HOME"])
@@ -66,9 +67,9 @@ async def _resource_template(
             "code_min": ("", ".min")[
                 logger.getEffectiveLevel() <= logging.DEBUG
             ],
-            "proginfo": "{} - version: {}".format(
-                doorpi.metadata.distribution.metadata["Name"],
-                doorpi.metadata.distribution.metadata["Version"],
+            "proginfo": (
+                f"{doorpi.metadata.distribution.metadata['Name']}"
+                f" - version: {doorpi.metadata.distribution.metadata['Version']}"
             ),
         },
     )

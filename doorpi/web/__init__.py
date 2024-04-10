@@ -1,4 +1,5 @@
-"""The DoorPiWeb server"""
+"""The DoorPiWeb server."""
+
 import asyncio
 import http.server
 import logging
@@ -6,7 +7,6 @@ import os
 import pathlib
 import socket
 import threading
-import typing as T
 
 import doorpi
 from doorpi.actions import CallbackAction
@@ -18,19 +18,19 @@ try:
 except ImportError as err:
     _MISSING_DEP = err.name
 
-    def load() -> T.Optional[threading.Thread]:  # pylint: disable=R1711
-        """Load the webserver"""
+    # pylint: disable-next=useless-return
+    def load() -> threading.Thread | None:
+        """Load the webserver."""
         LOGGER.error(
             "Cannot start web server: Unmet dependencies: %s",
             _MISSING_DEP,
         )
         return None
 
-
 else:
 
-    def load() -> T.Optional[threading.Thread]:
-        """Load the webserver"""
+    def load() -> threading.Thread | None:
+        """Load the webserver."""
         thread = threading.Thread(
             target=asyncio.run,
             args=(server.run(),),

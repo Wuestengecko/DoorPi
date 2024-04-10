@@ -1,7 +1,9 @@
-"""Actions that control event execution: sleep, waitevent"""
+"""Actions that control event execution: sleep, waitevent."""
+
 import threading
+from collections.abc import Mapping
 from time import sleep
-from typing import Any, Mapping
+from typing import Any
 
 import doorpi.actions
 import doorpi.event
@@ -56,8 +58,9 @@ class WaitEventAction(Action):
 
     def __str__(self) -> str:
         otheraction = "continue" if self.__action == "abort" else "abort"
-        return "Wait for {}, then {} (otherwise {})".format(
-            self.__eventname, self.__action, otheraction
+        return (
+            f"Wait for {self.__eventname}, then {self.__action}"
+            f" (otherwise {otheraction})"
         )
 
     def __repr__(self) -> str:

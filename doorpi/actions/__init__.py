@@ -21,6 +21,7 @@ but the rest of DoorPi still functions as normal.
 For more details of the required methods on action classes, see the
 definition of `Action` below.
 """
+
 from __future__ import annotations
 
 import abc
@@ -28,16 +29,8 @@ import importlib.metadata
 import importlib.util
 import logging
 import pkgutil
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Mapping,
-    Optional,
-    Protocol,
-    TypeVar,
-    runtime_checkable,
-)
+from collections.abc import Callable, Mapping
+from typing import Any, Dict, Optional, Protocol, TypeVar, runtime_checkable
 
 import doorpi
 
@@ -46,7 +39,7 @@ LOGGER = logging.getLogger(__name__)
 _T = TypeVar("_T", bound=Callable)
 
 
-def from_string(confstr: str) -> Optional[Action]:
+def from_string(confstr: str) -> Action | None:
     """Instantiates an action from a configuration string."""
     atype = confstr.split(":")[0]
     if not atype:
@@ -90,16 +83,16 @@ class Action(Protocol, metaclass=abc.ABCMeta):
         """Execute the action.
 
         Arguments:
-        - `event_id`: The unique event ID. Log messages emitted by
-                      actions should be prepended with "[event_id]".
-        - `extra`: A dict containing additional information from the
-                   event source, as well as runtime information about
-                   the last time this event was fired.
+            event_id: The unique event ID. Log messages emitted by
+                actions should be prepended with "[event_id]".
+            extra: A dict containing additional information from the
+                event source, as well as runtime information about the
+                last time this event was fired.
         """
 
     @abc.abstractmethod
     def __str__(self) -> str:
-        """A human readable representation of this action
+        """A human readable representation of this action.
 
         str(some_action) should result in a human-readable string that
         accurately describes the action, which will be used in user
@@ -109,7 +102,7 @@ class Action(Protocol, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __repr__(self) -> str:
-        """Form an action string
+        """Form an action string.
 
         repr(some_action) should reassemble the string which originally
         constructed this action, or a string equal to that. For actions

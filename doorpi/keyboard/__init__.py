@@ -1,4 +1,4 @@
-"""The DoorPi keyboard modules
+"""The DoorPi keyboard modules.
 
 A keyboard module handles input from and output to specific hardware.
 It is responsible for firing the appropriate events when buttons are
@@ -46,6 +46,7 @@ The following events are defined for keyboard modules:
   tag that was not registered was detected. The tag's ID is supplied in
   the event's extra information as `tag`.
 """
+
 from __future__ import annotations
 
 import doorpi

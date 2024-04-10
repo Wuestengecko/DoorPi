@@ -24,9 +24,8 @@ class TestMailAction(DoorPiTestCase):
     def setUp(self):
         super().setUp()
 
-        Path("doorpi.ini").write_text(
-            textwrap.dedent(
-                """\
+        config = textwrap.dedent(
+            """\
             [DoorPi]
             last_snapshot = /dev/null
 
@@ -38,8 +37,8 @@ class TestMailAction(DoorPiTestCase):
             password = test
             signature = !EPILOG!
             """
-            )
         )
+        Path("doorpi.ini").write_text(config, encoding="locale")
 
     @patch("smtplib.SMTP")
     @patch("doorpi.INSTANCE", new_callable=DoorPi)

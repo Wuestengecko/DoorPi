@@ -1,8 +1,9 @@
-"""Authentication and Authorization middlewares for DoorPiWeb"""
+"""Authentication and Authorization middlewares for DoorPiWeb."""
+
 import dataclasses
 import datetime
 import re
-import typing as T
+from collections.abc import Awaitable, Callable
 
 import aiohttp.web
 import pytz
@@ -22,24 +23,24 @@ def setup(app: aiohttp.web.Application) -> None:
 
 @dataclasses.dataclass
 class Session:
-    """Stores information about a session"""
+    """Stores information about a session."""
 
     user: str
-    groups: T.AbstractSet[str]
-    remote: T.Optional[str]
+    groups: frozenset[str]
+    remote: str | None
     login_time: datetime.datetime
-    readable: T.AbstractSet[str]
-    writable: T.AbstractSet[str]
+    readable: frozenset[str]
+    writable: frozenset[str]
 
 
 @aiohttp.web.middleware
 async def dpw_auth(
     request: aiohttp.web.Request,
-    handler: T.Callable[
-        [aiohttp.web.Request], T.Awaitable[aiohttp.web.StreamResponse]
+    handler: Callable[
+        [aiohttp.web.Request], Awaitable[aiohttp.web.StreamResponse]
     ],
 ) -> aiohttp.web.StreamResponse:
-    """The DoorPiWeb Authentication middleware"""
+    """The DoorPiWeb Authentication middleware."""
     if is_public_resource(request) or is_user_authorized(request):
         return await handler(request)
     else:
@@ -55,7 +56,7 @@ async def dpw_auth(
 
 
 def is_public_resource(request: aiohttp.web.Request) -> bool:
-    """Check whether the accessed resource is public"""
+    """Check whether the accessed resource is public."""
     if request.method != "GET":
         return False
     for res in request.app["doorpi_web_config"]["areas.public"]:
@@ -65,7 +66,7 @@ def is_public_resource(request: aiohttp.web.Request) -> bool:
 
 
 def is_user_authorized(request: aiohttp.web.Request) -> bool:
-    """Check if the logged in user is authorized for this request"""
+    """Check if the logged in user is authorized for this request."""
     session = get_user_session(request)
     if session is None:
         return False
@@ -91,8 +92,8 @@ def is_user_authorized(request: aiohttp.web.Request) -> bool:
 
 def get_user_session(
     request: aiohttp.web.Request,
-) -> T.Optional[Session]:
-    """Authenticate the user and return the session
+) -> Session | None:
+    """Authenticate the user and return the session.
 
     If the user cannot be authenticated, returns ``None``.
     """
@@ -148,7 +149,7 @@ def get_user_session(
 
 
 def create_session(username: str, request: aiohttp.web.Request) -> Session:
-    """Create a new session for ``username``"""
+    """Create a new session for ``username``."""
     cfg = request.app["doorpi_web_conf"]
     usergroups = frozenset(
         group

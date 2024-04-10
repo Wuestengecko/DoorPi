@@ -82,7 +82,7 @@ class TestDoorPiSD(DoorPiTestCase):
                 ((b"STOPPING=1", self.expected_socket_path),),
                 (
                     (
-                        "STATUS=\U0001F408\\n".encode("utf-8"),
+                        "STATUS=\U0001F408\\n".encode(),
                         self.expected_socket_path,
                     ),
                 ),

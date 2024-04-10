@@ -1,5 +1,5 @@
-"""The event-action system"""
+"""The event-action system."""
 
 
 class AbortEventExecution(Exception):
-    """Abort executing the current event"""
+    """Abort executing the current event."""

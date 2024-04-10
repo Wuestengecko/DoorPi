@@ -1,9 +1,10 @@
-"""Actions related to emails: mailto"""
+"""Actions related to emails: mailto."""
 
 import email.message
 import logging
 import smtplib
-from typing import Any, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 import doorpi
 from doorpi import metadata
@@ -15,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class MailAction(Action):
-    """Send an email"""
+    """Send an email."""
 
     def __init__(
         self,
@@ -55,8 +56,8 @@ class MailAction(Action):
 
         if text.startswith("/"):
             # Read actual text from file
-            self.__textfile: Optional[str] = text
-            with open(text, "rt", encoding="locale") as textfile:
+            self.__textfile: str | None = text
+            with open(text, encoding="locale") as textfile:
                 self.__text = textfile.read()
         else:
             self.__textfile = None
@@ -72,16 +73,20 @@ class MailAction(Action):
             raise ValueError("Cannot combine SSL and STARTTLS")
 
         # Test the SMTP connection by greeting the server and logging in
-        with smtplib.SMTP_SSL(
-            self.__host, self.__port
-        ) if self.__ssl else smtplib.SMTP(self.__host, self.__port) as smtp:
+        with (
+            smtplib.SMTP_SSL(self.__host, self.__port)
+            if self.__ssl
+            else smtplib.SMTP(self.__host, self.__port)
+        ) as smtp:
             self._start_session(smtp)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
         msg = email.message.EmailMessage()
-        msg["From"] = self.__from or '"{}" <{}@{}>'.format(
-            metadata.distribution.metadata["Name"], self.__user, self.__host
-        )
+        if self.__from:
+            msg["From"] = self.__from
+        else:
+            distname = metadata.distribution.metadata["Name"]
+            msg["From"] = f'"{distname}" <{self.__user}@{self.__host}>'
         msg["To"] = self.__to
         msg["Subject"] = doorpi.INSTANCE.parse_string(self.__subject)
 

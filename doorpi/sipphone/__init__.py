@@ -1,3 +1,4 @@
+# noqa: D214, D410, D411
 """The SIP phone container module for DoorPi.
 
 A SIP phone module is required for DoorPi to make any outgoing calls
@@ -59,6 +60,7 @@ A proper SIP phone module will fire these events during its life cycle:
 - OnDTMF, OnDTMF_<seq>:
   Fired when the DTMF sequence ``<seq>`` was received.
 """
+
 import importlib
 import logging
 import sys
@@ -70,8 +72,8 @@ from .abc import AbstractSIPPhone
 
 __all__ = ["DEFAULT_MEDIA_DIR", "AbstractSIPPhone", "load"]
 
-DEFAULT_MEDIA_DIR = "{}/share/{}".format(
-    sys.prefix, metadata.distribution.metadata["Name"].lower()
+DEFAULT_MEDIA_DIR = (
+    f"{sys.prefix}/share/{metadata.distribution.metadata['Name'].lower()}"
 )
 
 

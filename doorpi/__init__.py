@@ -1,9 +1,9 @@
-"""provide intercomstation to the doorstation by VoIP"""
+"""Provide intercomstation to the doorstation by VoIP."""
 
 import logging
 from typing import TYPE_CHECKING, Any, List
 
-__all__: List[str] = []
+__all__: list[str] = []
 
 INSTANCE: "doorpi.DoorPi"
 
@@ -12,10 +12,10 @@ logging.addLevelName(logging.TRACE, "TRACE")  # type: ignore
 
 
 class DoorPiLogger(logging.getLoggerClass()):  # type: ignore
-    """Logger subclass that adds the TRACE level"""
+    """Logger subclass that adds the TRACE level."""
 
     def trace(self, message: str, *args: Any, **kw: Any) -> None:
-        """Logs with TRACE level"""
+        """Logs with TRACE level."""
         if self.isEnabledFor(logging.TRACE):  # type: ignore # pragma: no cover
             self._log(logging.TRACE, message, args, **kw)  # type: ignore
 

@@ -1,7 +1,9 @@
-"""Action that writes DoorPi status to a file: statusfile"""
+"""Action that writes DoorPi status to a file: statusfile."""
+
 import logging
 import pathlib
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import doorpi.actions
 from doorpi.status.status_class import DoorPiStatus

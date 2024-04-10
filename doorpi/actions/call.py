@@ -1,9 +1,10 @@
-"""Call related actions: call, file_call_value, hangup"""
+"""Call related actions: call, file_call_value, hangup."""
 
 import logging
 import pathlib
 import time
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import doorpi
 

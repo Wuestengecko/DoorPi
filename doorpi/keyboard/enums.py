@@ -1,4 +1,4 @@
-"""Enumeration types used in the configuration file"""
+"""Enumeration types used in the configuration file."""
 
 import enum
 import importlib.metadata
@@ -22,29 +22,29 @@ KeyboardType = enum.Enum(  # type: ignore[misc]
 
 
 class GPIOMode(enum.Enum):
-    """The pin numbering mode for the GPIOKeyboard"""
+    """The pin numbering mode for the GPIOKeyboard."""
 
     BOARD = 1
     """Use numbers according to the header pinout (recommended)"""
     BCM = 2
-    """Use numbers according to the internal chip wiring"""
+    """Use numbers according to the internal chip wiring."""
 
 
 class GPIOPull(enum.Enum):
-    """Configure internal pull-up/down resistors"""
+    """Configure internal pull-up/down resistors."""
 
     OFF = enum.auto()
-    """Do not use the internal pull-up/down resistors"""
+    """Do not use the internal pull-up/down resistors."""
     UP = enum.auto()
-    """Use the internal pull-up resistors"""
+    """Use the internal pull-up resistors."""
     DOWN = enum.auto()
-    """Use the internal pull-down resistors"""
+    """Use the internal pull-down resistors."""
 
 
 class Polarity(enum.Enum):
-    """Keyboard pin polarity"""
+    """Keyboard pin polarity."""
 
     HIGH = enum.auto()
-    """VCC is True, GND is False"""
+    """VCC is True, GND is False."""
     LOW = enum.auto()
-    """VCC is False, GND is True"""
+    """VCC is False, GND is True."""

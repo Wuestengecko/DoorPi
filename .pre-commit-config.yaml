@@ -1,0 +1,51 @@
+default_install_hook_types: [commit-msg, pre-commit]
+default_stages: [commit, merge-commit]
+minimum_pre_commit_version: 3.2.0
+repos:
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+        args: ['--py310-plus']
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+  - repo: https://github.com/PyCQA/docformatter
+    rev: v1.7.5
+    hooks:
+      - id: docformatter
+        additional_dependencies:
+          - docformatter[tomli]
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        additional_dependencies:
+          - pydocstyle[toml]
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 24.3.0
+    hooks:
+      - id: black
+  - repo: local # mypy
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: python
+        types_or: [python, toml, yaml]
+        pass_filenames: false
+        args: [doorpi]
+        additional_dependencies:
+          - mypy==1.9.0
+          - paho-mqtt==2.1.0
+          - types-toml
+          - types-pytz
+          - types-docutils
+          - types-requests
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.1.0
+    hooks:
+      - id: pylint
+        require_serial: false
+        args: [-rn, -sn, -dfixme, -dduplicate-code]

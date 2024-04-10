@@ -35,11 +35,12 @@ class TestActionStatusfile(DoorPiTestCase):
     def test_noperm(self, _):
         with tempfile.TemporaryDirectory() as tmpdir:
             sf = Path(tmpdir, "status.txt")
-            sf.open("w").close()
+            sf.touch()
             sf.chmod(0)
 
             try:
-                sf.open("r").close()
+                with sf.open("rb"):
+                    pass
             except PermissionError:
                 pass
             else:

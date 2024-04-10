@@ -1,4 +1,5 @@
-from typing import Any, Dict, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import doorpi.actions.snapshot
 import doorpi.doorpi
@@ -8,7 +9,7 @@ def get(
     doorpi_obj: doorpi.doorpi.DoorPi,
     name: Iterable[str],
     value: Iterable[str],
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     del doorpi_obj, name, value
 
     path = str(doorpi.actions.snapshot.SnapshotAction.get_base_path())

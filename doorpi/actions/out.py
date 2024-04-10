@@ -1,6 +1,8 @@
-"""Actions related to pin output: out"""
+"""Actions related to pin output: out."""
+
 import threading
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import doorpi
 
@@ -87,7 +89,7 @@ class TriggeredOutAction(OutAction):
 
 
 def instantiate(*args: str) -> Action:
-    """Create an ``out:`` action"""
+    """Create an ``out:`` action."""
     if len(args) <= 2:
         return OutAction(*args)
     return TriggeredOutAction(*args)

@@ -29,6 +29,7 @@ class DoorPiTestCase(unittest.TestCase):
     def setUp(self):
         global doorpi_instance
         doorpi_instance = None
+        # pylint: disable-next=consider-using-with
         self.tmpdir = TemporaryDirectory()
         self.oldpwd = os.getcwd()
         os.chdir(self.tmpdir.name)
@@ -42,7 +43,7 @@ class DoorPiTestCase(unittest.TestCase):
 
 @contextlib.contextmanager
 def assert_no_raise(testcase, *, cls=Exception, msg="Exception was raised"):
-    """Assert that the ``with`` block does not raise a ``cls`` instance"""
+    """Assert that the ``with`` block does not raise a ``cls`` instance."""
     try:
         yield
     except cls as err:
@@ -51,7 +52,7 @@ def assert_no_raise(testcase, *, cls=Exception, msg="Exception was raised"):
 
 @contextlib.contextmanager
 def promise_deletion(obj, attr):
-    """Delete ``obj.attr`` after the ``with`` block exits"""
+    """Delete ``obj.attr`` after the ``with`` block exits."""
     try:
         yield None
     finally:

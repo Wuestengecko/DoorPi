@@ -1,9 +1,10 @@
 """Callbacks from the native library."""
+
 # pylint: disable=protected-access, invalid-name
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 import pjsua2 as pj
 
@@ -81,16 +82,15 @@ class CallCallback(pj.Call):
         ).keys()
         self.__fire_disconnect = False
 
-    def __getAudioVideoMedia(self) -> Tuple[pj.AudioMedia, pj.VideoMedia]:
-        """Helper function that returns the first audio and video media"""
-
+    def __getAudioVideoMedia(self) -> tuple[pj.AudioMedia, pj.VideoMedia]:
+        """Helper function that returns the first audio and video media."""
         audio = None
         video = None
         ci = self.getInfo()
-        for i in range(len(ci.media)):
-            if ci.media[i].type == pj.PJMEDIA_TYPE_AUDIO and audio is None:
+        for i, media in enumerate(ci.media):
+            if media.type == pj.PJMEDIA_TYPE_AUDIO and audio is None:
                 audio = pj.AudioMedia.typecastFromMedia(self.getMedia(i))
-            if ci.media[i].type == pj.PJMEDIA_TYPE_VIDEO and video is None:
+            if media.type == pj.PJMEDIA_TYPE_VIDEO and video is None:
                 video = pj.VideoMedia.typecastFromMedia(self.getMedia(i))
         return (audio, video)
 
@@ -155,6 +155,7 @@ class CallCallback(pj.Call):
             )
 
     def onCallMediaState(self, prm: pj.OnCallMediaStateParam) -> None:
+        del prm
         ci = self.getInfo()
         if ci.state != pj.PJSIP_INV_STATE_CONFIRMED:
             LOGGER.debug("Ignoring media change in call to %r", ci.remoteUri)

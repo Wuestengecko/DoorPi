@@ -1,10 +1,11 @@
-"""Additional project metadata"""
-# pylint: disable=invalid-name
+"""Additional project metadata."""
+
+# pylint: disable=invalid-name, line-too-long
 
 from importlib import metadata as _meta
 
 try:
-    distribution = _meta.distribution(__name__.split(".")[0])
+    distribution = _meta.distribution(__name__.split(".", 1)[0])
 except _meta.PackageNotFoundError:  # pragma: no cover
     raise RuntimeError("DoorPi was not properly installed") from None
 
@@ -22,22 +23,15 @@ supporters = (
 )
 
 # created with: http://patorjk.com/software/taag/#p=display&f=Ogre&t=DoorPi
-epilog = r"""
+epilog = rf"""
     ___                  ___ _
-   /   \___   ___  _ __ / _ (_)  {project}
-  / /\ / _ \ / _ \| '__/ /_)/ |  version:   {version}
- / /_// (_) | (_) | | / ___/| |  license:   {license}
-/___,' \___/ \___/|_| \/    |_|  URL:       <{url}>
+   /   \___   ___  _ __ / _ (_)  {distribution.metadata["Name"]}
+  / /\ / _ \ / _ \| '__/ /_)/ |  version:   {distribution.metadata["Version"]}
+ / /_// (_) | (_) | | / ___/| |  license:   {distribution.metadata["License"]}
+/___,' \___/ \___/|_| \/    |_|  URL:       <{distribution.metadata["Home-page"]}>
 
-Author:     {author}
-Supporter:  {supporters}
+Author:     {distribution.metadata["Author"]} <{distribution.metadata["Author-email"]}>
+Supporter:  {{}}
 """.format(
-    license=distribution.metadata["License"],
-    project=distribution.metadata["Name"],
-    version=distribution.metadata["Version"],
-    author="{} <{}>".format(
-        distribution.metadata["Author"], distribution.metadata["Author-email"]
-    ),
-    supporters="\n            ".join(supporters),
-    url=distribution.metadata["Home-page"],
+    "\n            ".join(supporters)
 )

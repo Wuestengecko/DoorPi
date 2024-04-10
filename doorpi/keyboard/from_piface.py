@@ -1,4 +1,4 @@
-"""PiFace keyboard module
+"""PiFace keyboard module.
 
 > **Warning**: This keyboard module has not yet been extensively
 > tested. Use at your own risk.
@@ -11,6 +11,7 @@ Requirements:
 
 > **Note**: Only one keyboard of type "piface" may be configured.
 """
+
 import logging
 from typing import Any, Literal
 
@@ -55,7 +56,7 @@ class PifaceKeyboard(AbstractKeyboard):
         super().destroy()
 
     def event_detect(self, event: pifacecommon.InterruptEvent) -> None:
-        """Callback from PifaceDigitalIO library"""
+        """Callback from PifaceDigitalIO library."""
         if self.input(event.pin_num):
             self._fire_keydown(event.pin_num)
         else:

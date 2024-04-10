@@ -1,7 +1,7 @@
-"""DoorPiWeb handlers for the JSON API"""
+"""DoorPiWeb handlers for the JSON API."""
+
 import json
 import textwrap
-import typing as T
 
 import aiohttp.web
 
@@ -161,9 +161,9 @@ async def _mirror(
 async def _status(
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
-    module: T.List[str] = request.query.getall("module", [])
-    name: T.List[str] = request.query.getall("name", [])
-    value: T.List[str] = request.query.getall("value", [])
+    module: list[str] = request.query.getall("module", [])
+    name: list[str] = request.query.getall("name", [])
+    value: list[str] = request.query.getall("value", [])
 
     status = doorpi.INSTANCE.get_status(modules=module, name=name, value=value)
 

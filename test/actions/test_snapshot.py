@@ -18,7 +18,9 @@ class SnapshotTestCase(DoorPiTestCase):
         super().setUp()
         self.snap_path = Path.cwd() / "snapshots"
         self.snap_path.mkdir()
-        Path("doorpi.ini").write_text(CONFIG.format(self.snap_path))
+        Path("doorpi.ini").write_text(
+            CONFIG.format(self.snap_path), encoding="locale"
+        )
 
 
 class TestURLSnapshotAction(SnapshotTestCase):

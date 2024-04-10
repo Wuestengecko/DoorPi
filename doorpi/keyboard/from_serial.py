@@ -50,11 +50,13 @@ If the keyboard hardware does not send a special stop flag, leave the
 "input_stop_flag" option empty. In that case, each character sent over
 the wire will be handled separately.
 """
+
 import collections
 import datetime
 import logging
 import threading
-from typing import Any, Deque, Iterable, Optional
+from collections.abc import Iterable
+from typing import Any
 
 import serial  # pylint: disable=import-error
 
@@ -99,7 +101,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
         self._ser.open()
 
         self._shutdown = False
-        self._exception: Optional[Exception] = None
+        self._exception: Exception | None = None
         self._thread = threading.Thread(target=self.read_serial)
         self._thread.start()
 
@@ -139,14 +141,13 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
             )
 
     def read_serial(self) -> None:
-        """Serial connection read function
+        """Serial connection read function.
 
         This function is run in a separate thread to listen for key
         presses sent by the keyboard.
         """
-
         buflen = self._input_max_size
-        buf: Deque[bytes] = collections.deque(maxlen=buflen + 1)
+        buf = collections.deque[bytes](maxlen=buflen + 1)
         stopflag = self._input_stop_flag
         try:
             while not self._shutdown:
@@ -184,7 +185,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
                 self._exception = ex
 
     def process_buffer(self, buf: bytes) -> None:
-        """Process the buffer contents
+        """Process the buffer contents.
 
         This function is called by the worker thread to process the
         buffer contents and fire the appropriate events after a STOP

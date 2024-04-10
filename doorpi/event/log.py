@@ -2,7 +2,8 @@ import json
 import logging
 import pathlib
 import sqlite3
-from typing import Any, Mapping, Optional, Tuple, TypedDict
+from collections.abc import Mapping
+from typing import Any, TypedDict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class EventLogEntry(TypedDict):
 
 
 class EventLog:
-    """Record keeper about fired events and executed actions"""
+    """Record keeper about fired events and executed actions."""
 
     def __init__(self, db: str) -> None:
         if not sqlite3.threadsafety:
@@ -58,7 +59,7 @@ class EventLog:
             )
 
     def count_event_log_entries(self, filter_: str = "") -> int:
-        """Count the event log entries that match ``filter_``
+        """Count the event log entries that match ``filter_``.
 
         Args:
             filter_: A SQLite LIKE substring to filter any column
@@ -84,8 +85,8 @@ class EventLog:
         self,
         max_count: int = 100,
         filter_: str = "",
-    ) -> Tuple[EventLogEntry, ...]:
-        """Get event records from the event log
+    ) -> tuple[EventLogEntry, ...]:
+        """Get event records from the event log.
 
         Args:
             max_count: The maximum number of events to fetch
@@ -142,9 +143,9 @@ class EventLog:
         source: str,
         event: str,
         start_time: float,
-        extra: Optional[Mapping[str, Any]],
+        extra: Mapping[str, Any] | None,
     ) -> None:
-        """Insert an event into the event log
+        """Insert an event into the event log.
 
         Args:
             event_id: The unique ID for this event
@@ -173,7 +174,7 @@ class EventLog:
     def log_action(
         self, event_id: str, action_name: str, start_time: float
     ) -> None:
-        """Insert an executed action into the event log
+        """Insert an executed action into the event log.
 
         Args:
             event_id: The unique ID of the associated event
@@ -194,5 +195,5 @@ class EventLog:
             )
 
     def destroy(self) -> None:
-        """Shut down the event log"""
+        """Shut down the event log."""
         self._db.close()

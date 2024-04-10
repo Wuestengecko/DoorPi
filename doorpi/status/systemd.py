@@ -1,14 +1,13 @@
 import logging
 import os
 import socket
-from typing import Optional
 
 LOGGER = logging.getLogger(__name__)
 
 
 class DoorPiSD:
-    sockaddr: Optional[str]
-    socket: Optional[socket.socket]
+    sockaddr: str | None
+    socket: socket.socket | None
 
     def __init__(self) -> None:
         self.sockaddr = self.socket = None
@@ -31,7 +30,7 @@ class DoorPiSD:
             )
 
     def ready(self) -> None:
-        """Tell the service manager that we are ready
+        """Tell the service manager that we are ready.
 
         Inform the manager that service startup has completed
         successfully or that the service is done reloading its
@@ -40,7 +39,7 @@ class DoorPiSD:
         return self.__send("READY=1")
 
     def reloading(self) -> None:
-        """Tell the service manager that we are reloading configuration
+        """Tell the service manager that we are reloading configuration.
 
         Inform the service manager that we have begun reloading our
         configuration files. Once done, `ready()` must be called again.
@@ -48,11 +47,11 @@ class DoorPiSD:
         return self.__send("RELOADING=1")
 
     def stopping(self) -> None:
-        """Tell the service manager that we are shutting down"""
+        """Tell the service manager that we are shutting down."""
         return self.__send("STOPPING=1")
 
     def status(self, msg: str) -> None:
-        """Describe the service state for humans
+        """Describe the service state for humans.
 
         Passes a human readable, single-line status string back to the
         service manager that describes the current service state.
@@ -60,7 +59,7 @@ class DoorPiSD:
         return self.__send("STATUS={}".format(msg.replace("\n", "\\n")))
 
     def watchdog(self) -> None:
-        """Tell the service manager that we are still alive
+        """Tell the service manager that we are still alive.
 
         Tell the manager to update its watchdog timestamp. This is the
         keep-alive ping that a service needs to issue in regular
@@ -69,8 +68,8 @@ class DoorPiSD:
         return self.__send("WATCHDOG=1")
 
     @staticmethod
-    def get_watchdog_timeout_usec() -> Optional[int]:
-        """Get the configured watchdog timeout
+    def get_watchdog_timeout_usec() -> int | None:
+        """Get the configured watchdog timeout.
 
         Returns the configured watchdog timeout in microseconds. If
         `watchdog()` is not issued within that time after the last

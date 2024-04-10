@@ -1,7 +1,9 @@
-"""Actions related to executing other processes: os_execute"""
+"""Actions related to executing other processes: os_execute."""
+
 import logging
 import subprocess
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from . import Action
 
@@ -9,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class OSExecuteAction(Action):
-    """Executes a command"""
+    """Executes a command."""
 
     def __init__(self, *cmd: str) -> None:
         super().__init__()

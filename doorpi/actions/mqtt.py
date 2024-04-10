@@ -1,6 +1,7 @@
 """MQTT related actions: mqtt_publish."""
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import doorpi
 import doorpi.keyboard.from_mqtt as kb_mqtt

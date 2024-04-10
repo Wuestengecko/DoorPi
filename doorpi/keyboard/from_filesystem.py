@@ -1,4 +1,4 @@
-"""The file-based pseudo keyboard
+"""The file-based pseudo keyboard.
 
 This keyboard module simulates input/output events by using files. This
 may be useful for triggering events remotely via SSH, integrating with
@@ -51,9 +51,10 @@ Events will only be triggered if the logical pin state changes. If a
 "high" value is written to a file that contains a different "high"
 value, no event will be triggered. The same applies for "low" values.
 """
+
 import logging
 import pathlib
-from typing import Any, Optional
+from typing import Any
 
 import watchdog.events
 import watchdog.observers
@@ -165,7 +166,7 @@ class FilesystemKeyboard(
         self._outputs[pin] = value
         return True
 
-    def __read_file(self, pin: pathlib.Path) -> Optional[bool]:
+    def __read_file(self, pin: pathlib.Path) -> bool | None:
         try:
             val = pin.read_text()
         except OSError as err:
@@ -196,7 +197,7 @@ class FilesystemKeyboard(
             )
 
     def on_modified(self, event: watchdog.events.FileSystemEvent) -> None:
-        "Called by the watchdog library when an inotify event was triggered"
+        """Called by the watchdog library to handle inotify events."""
         if not isinstance(event, watchdog.events.FileModifiedEvent):
             return
 

@@ -1,4 +1,5 @@
-"""Configuration utilities for the PJSUA sipphone module"""
+"""Configuration utilities for the PJSUA sipphone module."""
+
 from __future__ import annotations
 
 import logging
@@ -159,11 +160,8 @@ def setup_audio_devices(adm: pj.AudDevManager) -> None:
             "No audio devices configured (See log for possible options)"
         )
 
-    capture_drv = capture_device.split(":")[0]
-    # The split-rejoin is necessary to handle device names with ":"
-    capture_dev = ":".join(capture_device.split(":")[1:])
-    playback_drv = playback_device.split(":")[0]
-    playback_dev = ":".join(playback_device.split(":")[1:])
+    capture_drv, _, capture_dev = capture_device.partition(":")
+    playback_drv, _, playback_dev = playback_device.partition(":")
     try:
         capture_idx = adm.lookupDev(capture_drv, capture_dev)
     except pj.Error:
@@ -264,7 +262,7 @@ def setup_audio_echo_cancellation(adm: pj.AudDevManager) -> None:
 
 # pylint: disable=too-few-public-methods
 class DoorPiLogWriter(pj.LogWriter):
-    """Redirects output from the PJSUA2 native module to a Python logger"""
+    """Redirects output from the PJSUA2 native module to a Python logger."""
 
     def __init__(self, logger: doorpi.DoorPiLogger) -> None:
         super().__init__()

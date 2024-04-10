@@ -1,7 +1,9 @@
 """Abstract base class that helps implementing a keyboard module."""
+
 import datetime
 import logging
-from typing import Any, Dict, Iterable, List, Optional
+from collections.abc import Iterable
+from typing import Any
 
 import doorpi
 import doorpi.keyboard.enums
@@ -14,11 +16,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 class AbstractKeyboard:
-    """Common functionality and helpers for keyboard modules"""
+    """Common functionality and helpers for keyboard modules."""
 
     name: str
     "The configured name of this keyboard"
-    last_key: Optional[str]
+    last_key: str | None
     "The last triggered input"
     last_key_time: datetime.datetime
     "The time when last_key was triggered"
@@ -28,12 +30,12 @@ class AbstractKeyboard:
     _bouncetime: datetime.timedelta
     "The configured ``bouncetime``"
     _event_source: str
-    """The "event source" name of this keyboard"""
+    """The "event source" name of this keyboard."""
     _high_polarity: bool
     "Configured keyboard polarity (True = HIGH)"
-    _inputs: List[str]
+    _inputs: list[str]
     "All configured input pin names"
-    _outputs: Dict[str, bool]
+    _outputs: dict[str, bool]
     "Configured output pins and their current states"
     _pressed_on_key_down: bool
     """Fire OnKeyPressed together with OnKeyDown (otherwise OnKeyUp)"""
@@ -44,7 +46,7 @@ class AbstractKeyboard:
         *,
         events: Iterable[str] = ("OnKeyPressed", "OnKeyUp", "OnKeyDown"),
     ):
-        """Common initialization
+        """Common initialization.
 
         This should be called before keyboard-specific initialization
         is done in subclass __init__. It will handle initialization of
@@ -109,14 +111,14 @@ class AbstractKeyboard:
         return f"{self.name} keyboard ({self.type})"
 
     def _deactivate(self) -> None:
-        """Deactivate the keyboard in preparation for shutdown
+        """Deactivate the keyboard in preparation for shutdown.
 
-        This will be called right before actually deleting the
-        keyboard, and can be used e.g. to deactivate worker threads.
+        This will be called right before actually deleting the keyboard,
+        and can be used e.g. to deactivate worker threads.
         """
 
     def input(self, pin: str) -> bool:
-        """Read an input pin
+        """Read an input pin.
 
         This function returns the current value of the given input pin
         as bool. If the pin does not exist, it should return False.
@@ -126,7 +128,7 @@ class AbstractKeyboard:
         return False
 
     def output(self, pin: str, value: Any) -> bool:
-        """Set output pin ``pin`` to ``value``
+        """Set output pin ``pin`` to ``value``.
 
         This function sets the given output pin to the given value. A
         keyboard implementation should normalize the passed value with
@@ -149,7 +151,7 @@ class AbstractKeyboard:
         return False
 
     def self_check(self) -> None:
-        """Check the correct functioning of this keyboard
+        """Check the correct functioning of this keyboard.
 
         This function will be periodically called to verify the keyboard
         is still functional. It should not return any value.  In case
@@ -161,22 +163,22 @@ class AbstractKeyboard:
 
     @property
     def type(self) -> str:  # pragma: no cover
-        """A human-readable keyboard type description"""
+        """A human-readable keyboard type description."""
         return type(self).__name__
 
     @property
-    def inputs(self) -> List[str]:  # pragma: no cover
-        """The list of input pins that this keyboard uses"""
+    def inputs(self) -> list[str]:  # pragma: no cover
+        """The list of input pins that this keyboard uses."""
         return list(self._inputs)
 
     @property
-    def outputs(self) -> Dict[str, bool]:  # pragma: no cover
-        """Maps this keyboard's output pins to their current states"""
+    def outputs(self) -> dict[str, bool]:  # pragma: no cover
+        """Maps this keyboard's output pins to their current states."""
         return dict(self._outputs)
 
     @property
-    def additional_info(self) -> Dict[str, Optional[str]]:  # pragma: no cover
-        """A dict with information about this keyboard
+    def additional_info(self) -> dict[str, str | None]:  # pragma: no cover
+        """A dict with information about this keyboard.
 
         The dict available here provides the following information:
 
@@ -193,19 +195,19 @@ class AbstractKeyboard:
         }
 
     @property
-    def pressed_keys(self) -> List[str]:  # pragma: no cover
-        """A list of currently pressed input pins"""
+    def pressed_keys(self) -> list[str]:  # pragma: no cover
+        """A list of currently pressed input pins."""
         return [p for p in self._inputs if self.input(p)]
 
     def _normalize(self, value: Any) -> bool:
-        """Normalize the passed value to a bool
+        """Normalize the passed value to a bool.
 
         This function normalizes an arbitrary value to a bool. If the
         current keyboard's polarity is LOW, the value is also flipped.
 
         This helper should be called immediately after reading a value
-        from an input pin, or immediately before writing the final
-        value to an output pin.
+        from an input pin, or immediately before writing the final value
+        to an output pin.
         """
         if not isinstance(value, bool):
             value = str(value).strip().lower() in HIGH_LEVEL
@@ -215,9 +217,9 @@ class AbstractKeyboard:
 
     def _fire_event(self, event_name: str, pin: str) -> None:
         eh = doorpi.INSTANCE.event_handler
-        doorpi.INSTANCE.keyboard.last_key = (
-            self.last_key
-        ) = f"{self.name}.{pin}"
+        doorpi.INSTANCE.keyboard.last_key = self.last_key = (
+            f"{self.name}.{pin}"
+        )
 
         extra = self.additional_info
         eh.fire_event(event_name, self._event_source, extra=extra)

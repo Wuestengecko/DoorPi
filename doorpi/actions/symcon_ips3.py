@@ -1,8 +1,10 @@
-"""Actions that interact with the Symcon IPS v3: symcon_ips3"""
+"""Actions that interact with the Symcon IPS v3: symcon_ips3."""
+
 import enum
 import json
 import logging
-from typing import Any, Dict, Mapping, TypedDict
+from collections.abc import Mapping
+from typing import Any, TypedDict
 
 import requests
 
@@ -18,7 +20,7 @@ TRUE_VALUES = {"true", "yes", "on", "1"}
 # <https://www.symcon.de/service/dokumentation/befehlsreferenz/variablenverwaltung/ips-getvariable/>
 @enum.unique
 class IPSVariableType(enum.Enum):
-    """Types of variables known to Symcon IPS v3"""
+    """Types of variables known to Symcon IPS v3."""
 
     BOOLEAN = 0
     INTEGER = 1
@@ -33,7 +35,7 @@ class IPSConfig(TypedDict):
 
 
 class IPSConnector:
-    """Helper class that facilitates connecting to a Symcon IPS"""
+    """Helper class that facilitates connecting to a Symcon IPS."""
 
     @property
     def config(self) -> IPSConfig:
@@ -45,7 +47,7 @@ class IPSConnector:
             password=dcfg["password"],
         )
 
-    def _do_request(self, method: str, *prm: Any) -> Dict[str, Any]:
+    def _do_request(self, method: str, *prm: Any) -> dict[str, Any]:
         payload = json.dumps(
             {"method": method, "params": prm, "jsonrpc": "2.0", "id": 0}
         ).encode("utf-8")

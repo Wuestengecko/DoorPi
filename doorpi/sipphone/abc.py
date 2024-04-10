@@ -1,4 +1,5 @@
 """Abstract base class that helps implementing a SIP phone module."""
+
 import abc
 import enum
 
@@ -9,10 +10,10 @@ __all__ = [
 
 
 class AbstractSIPPhone(metaclass=abc.ABCMeta):  # pragma: no cover
-    """Base class for all SIP phone modules
+    """Base class for all SIP phone modules.
 
-    This class defines and documents all public methods that a SIP
-    phone module implementation should expose.
+    This class defines and documents all public methods that a SIP phone
+    module implementation should expose.
     """
 
     @abc.abstractmethod
@@ -33,7 +34,6 @@ class AbstractSIPPhone(metaclass=abc.ABCMeta):  # pragma: no cover
 
         A proper SIP phone module should register at least the following
         events:
-
         """
         super().__init__()
 

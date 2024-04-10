@@ -42,7 +42,7 @@ class TestEventLog(DoorPiTestCase):
                     (
                         eid,
                         "test",
-                        f"OnTimeSecond",
+                        "OnTimeSecond",
                         eid * 2,
                         '{"more": "\'\\";", "things": true}',
                     ),

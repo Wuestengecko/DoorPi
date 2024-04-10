@@ -110,7 +110,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def main() -> None:
-    """Run DoorPi as standalone service"""
+    """Run DoorPi as standalone service."""
     args = parse_arguments()
     init_logger(args)
     LOGGER.info(metadata.epilog)

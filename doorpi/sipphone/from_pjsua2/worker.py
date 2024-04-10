@@ -1,4 +1,5 @@
 """The Worker class."""
+
 # pylint: disable=protected-access, invalid-name
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Worker:
-    """Keeps everything running and performs housekeeping tasks"""
+    """Keeps everything running and performs housekeeping tasks."""
 
     def __init__(self, sipphone: glue.Pjsua2) -> None:
         self.__phone = sipphone
@@ -56,10 +57,9 @@ class Worker:
             if num_ev == 0:
                 break
             if num_ev < 0:
+                msg = self.__ep.utilStrError(-num_ev)
                 raise RuntimeError(
-                    "Error while initializing PJSUA2: {msg} ({errno})".format(
-                        errno=-num_ev, msg=self.__ep.utilStrError(-num_ev)
-                    )
+                    f"Error while initializing PJSUA2: {msg} ({-num_ev})"
                 )
 
         # register tick actions
@@ -81,17 +81,16 @@ class Worker:
         self.__ep.libDestroy()
 
     def handleNativeEvents(self) -> None:
-        """Poll events from the native library"""
+        """Poll events from the native library."""
         num_ev = self.__ep.libHandleEvents(0)
         if num_ev < 0:
+            msg = self.__ep.utilStrError(-num_ev)
             raise RuntimeError(
-                "Error while handling PJSUA2 native events: {msg} ({errno})".format(
-                    errno=-num_ev, msg=self.__ep.utilStrError(-num_ev)
-                )
+                f"Error while handling PJSUA2 native events: {msg} ({-num_ev})"
             )
 
     def checkHangupAll(self) -> None:
-        """Check if hanging up all calls was requested"""
+        """Check if hanging up all calls was requested."""
         if not self.hangup:
             return
 
@@ -118,7 +117,7 @@ class Worker:
             self.hangup = False
 
     def checkCallTime(self) -> None:
-        """Check all current calls and enforce call time restrictions"""
+        """Check all current calls and enforce call time restrictions."""
         if (
             self.__phone.current_call is None
             and len(self.__phone._ringing_calls) == 0
@@ -175,7 +174,7 @@ class Worker:
                     fire_event("OnCallUnanswered")
 
     def createCalls(self) -> None:
-        """Create requested outbound calls"""
+        """Create requested outbound calls."""
         if len(self.__phone._waiting_calls) == 0:
             return
 

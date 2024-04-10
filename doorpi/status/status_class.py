@@ -3,7 +3,8 @@ from __future__ import annotations
 import importlib
 import json
 import logging
-from typing import Any, Dict, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import doorpi.doorpi
 
@@ -36,13 +37,13 @@ class DoorPiStatus:
     def __init__(
         self,
         doorpi_obj: doorpi.doorpi.DoorPi,
-        modules: Optional[Sequence[str]] = None,
+        modules: Sequence[str] | None = None,
         value: Sequence[str] = (),
         name: Sequence[str] = (),
     ) -> None:
         if not modules:
             modules = MODULES
-        self.dictionary: Dict[str, Dict[str, Any]] = {}
+        self.dictionary: dict[str, dict[str, Any]] = {}
 
         if len(modules) == 0:
             modules = MODULES

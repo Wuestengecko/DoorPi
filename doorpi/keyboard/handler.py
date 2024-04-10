@@ -1,6 +1,7 @@
 """This module houses the keyboard handler."""
+
 import logging
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import doorpi.actions
 import doorpi.keyboard.abc
@@ -13,13 +14,14 @@ class KeyboardHandler:
     """The keyboard handler.
 
     This class is responsible for constructing the individual keyboard
-    instances, dispatching output events to and querying inputs from them.
+    instances, dispatching output events to and querying inputs from
+    them.
     """
 
-    last_key: Optional[str]
+    last_key: str | None
 
-    __aliases: Dict[str, Dict[str, str]]
-    __keyboards: Dict[str, doorpi.keyboard.abc.AbstractKeyboard]
+    __aliases: dict[str, dict[str, str]]
+    __keyboards: dict[str, doorpi.keyboard.abc.AbstractKeyboard]
 
     def __load_keyboard(
         self, kbname: str, kbtype: str
@@ -114,8 +116,8 @@ class KeyboardHandler:
         if abort:
             doorpi.INSTANCE.doorpi_shutdown()
 
-    def enumerate_outputs(self) -> Dict[str, str]:
-        """Enumerates all known output pins
+    def enumerate_outputs(self) -> dict[str, str]:
+        """Enumerates all known output pins.
 
         Returns:
             A dict mapping pin aliases to the fully qualified pin names
@@ -130,7 +132,7 @@ class KeyboardHandler:
     def _decode_pinpath(
         self,
         pinpath: str,
-    ) -> Tuple[doorpi.keyboard.abc.AbstractKeyboard, str, str]:
+    ) -> tuple[doorpi.keyboard.abc.AbstractKeyboard, str, str]:
         try:
             kbname, pin = pinpath.split(".")
         except ValueError:

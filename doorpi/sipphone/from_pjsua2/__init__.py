@@ -1,4 +1,5 @@
 """The PJSUA2 SIP phone module for DoorPi."""
+
 import logging
 from typing import Optional
 
@@ -12,7 +13,7 @@ def fire_event(
     event_name: str,
     async_only: bool = False,
     *,
-    remote_uri: Optional[str] = None,
+    remote_uri: str | None = None,
 ) -> None:
     """Helper function to ease firing events.
 
