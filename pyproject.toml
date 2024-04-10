@@ -44,6 +44,7 @@ dependencies = [
   "aiohttp-jinja2",
   "docutils>=0.14",
   "jinja2>=2.11.0",
+  "paho-mqtt>=2.1.0,<3",
   "pyserial>=2.7",
   "requests>=2.7.0",
   "toml>=0.10.1",
@@ -74,6 +75,7 @@ http_request = "doorpi.actions.http_request:HTTPRequestAction"
 log = "doorpi.actions.log:LogAction"
 mail = "doorpi.actions.mail:MailAction"
 mailto = "doorpi.actions.mail:MailAction"
+mqtt_publish = "doorpi.actions.mqtt:MQTTPublishAction"
 os_execute = "doorpi.actions.subproc:OSExecuteAction"
 out = "doorpi.actions.out:instantiate"
 sleep = "doorpi.actions.control:SleepAction"
@@ -87,6 +89,7 @@ waitevent = "doorpi.actions.control:WaitEventAction"
 [project.entry-points."doorpi.keyboards"]
 filesystem = "doorpi.keyboard.from_filesystem:FilesystemKeyboard"
 gpio = "doorpi.keyboard.from_gpio:GPIOKeyboard"
+mqtt = "doorpi.keyboard.from_mqtt:MQTTKeyboard"
 piface = "doorpi.keyboard.from_piface:PifaceKeyboard"
 pn532 = "doorpi.keyboard.from_pn532:PN532Keyboard"
 rdm6300 = "doorpi.keyboard.from_rdm6300:RDM6300Keyboard"

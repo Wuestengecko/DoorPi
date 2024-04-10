@@ -1,0 +1,69 @@
+[events]
+"OnMQTTMessage_[topic]" = "A message on the MQTT [topic] was received."
+
+[config.keyboard."*".broker]
+_description = "[mqtt] The MQTT broker to connect to."
+_type = "string"
+
+[config.keyboard."*".client_id]
+_description = "[mqtt] The client ID to use when connecting to the broker."
+_default = "DoorPi"
+
+[config.keyboard."*".topic_prefix]
+_description = '''[mqtt] Prefix to prepend to all MQTT topics.
+
+Defaults to ``doorpi/{keyboard_name}``.'''
+_type = "string"
+
+[config.keyboard."*".homeassistant]
+_description = "[mqtt] Publish Home Assistant discovery messages."
+_default = true
+
+[config.keyboard."*".button_inputs]
+_description = '''[mqtt] Inputs to treat as buttons.
+
+Switches have two states ON and OFF, which can be toggled with the respective
+payload. Buttons only react to messages that contain ON, and only trigger the
+"pressed" event, but don't have to be explicitly reset by sending the OFF
+payload.
+
+In either case, input is expected on the command topic at::
+
+    doorpi/[keyboard_name]/input/[input_name]
+
+This setting also affects how the input entities are presented to Home
+Assistant, if discovery is enabled.'''
+_type = "list"
+_membertype = "string"
+_default = []
+
+[config.keyboard."*".trigger_outputs]
+_description = '''[mqtt] Outputs to treat as triggers.
+
+Similar to switches vs. buttons, standard "sensor" type outputs have distinct
+ON/OFF states that need to be toggled, while "trigger" outputs only send out
+their ON state, and don't have to be reset afterwards. Additionally, messages
+for trigger outputs are not retained by the broker, unless 'trigger_retain' is
+set to true.
+
+The topic that the output is published to is::
+
+    doorpi/[keyboard_name]/output/[output_name]
+
+Home Assistant will see sensor type outputs as 'binary_sensor' entities, while
+trigger type outputs will be seen as 'event' entities.'''
+_type = "list"
+_membertype = "string"
+_default = []
+
+[config.keyboard."*".trigger_retain]
+_description = '''[mqtt] Retain messages for trigger outputs.
+
+Note that Home Assistant will ignore retained messages for trigger outputs.'''
+_default = false
+
+[config.keyboard."*".qos]
+_description = '''[mqtt] The quality of service level to send messages with.
+
+Must be 0, 1 or 2.'''
+_default = 0
