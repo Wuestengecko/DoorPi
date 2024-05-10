@@ -7,11 +7,12 @@ import os
 import pathlib
 import socket
 import threading
+from typing import cast
 
 import doorpi
 from doorpi.actions import CallbackAction
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 try:
     from . import server

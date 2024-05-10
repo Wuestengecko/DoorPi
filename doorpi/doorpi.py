@@ -52,8 +52,6 @@ class DoorPi:
 
     @property
     def extra_info(self) -> Mapping[str, Any]:
-        if self.event_handler is None:
-            return {}  # type: ignore[unreachable]
         return self.event_handler.extra_info
 
     @property
@@ -103,6 +101,8 @@ class DoorPi:
             self._base_path = self.config["base_path"]
         except KeyError:
             self._base_path = None
+
+        self.event_handler = doorpi.event.handler.EventHandler()
         self.webserver = None
 
         self.__deadlysignals = 0
@@ -149,8 +149,6 @@ class DoorPi:
         signal.signal(signal.SIGHUP, handler)
         signal.signal(signal.SIGINT, handler)
         signal.signal(signal.SIGTERM, handler)
-
-        self.event_handler = doorpi.event.handler.EventHandler()
 
         # register own events
         for event in (
@@ -230,10 +228,10 @@ class DoorPi:
             )
 
         # unregister modules
-        self.sipphone = self.keyboard = self.webserver = None  # type: ignore
         self.__prepared = False
+        del self.sipphone, self.keyboard, self.webserver
 
-        doorpi.INSTANCE = None  # type: ignore
+        del doorpi.INSTANCE
         LOGGER.info("======== DoorPi completed shutting down ========")
 
     def run(self) -> None:

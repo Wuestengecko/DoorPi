@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 import RPi.GPIO as gpio  # pylint: disable=import-error
 
-from doorpi import keyboard
+from doorpi.keyboard import enums
 
 from .abc import AbstractKeyboard
 
@@ -13,7 +13,6 @@ INSTANTIATED = False
 
 class GPIOKeyboard(AbstractKeyboard):
     def __init__(self, name: str) -> None:
-        # pylint: disable=no-member  # Only available at runtime
         global INSTANTIATED
         if INSTANTIATED:
             raise RuntimeError("Only one GPIO keyboard may be instantiated")
@@ -23,14 +22,20 @@ class GPIOKeyboard(AbstractKeyboard):
 
         gpio.setwarnings(False)
 
-        gpio.setmode((gpio.BOARD, gpio.BCM)[self.config["mode"].value - 1])
+        mode = self.config["mode"]
+        if mode is enums.GPIOMode.BOARD:
+            gpio.setmode(gpio.BOARD)
+        elif mode is enums.GPIOMode.BCM:
+            gpio.setmode(gpio.BCM)
+        else:
+            raise ValueError(f"{self.name}: Unknown GPIO mode {mode}")
 
         pull = self.config["pull_up_down"]
-        if pull is keyboard.PullUpDown.OFF:  # type: ignore[attr-defined]
+        if pull is enums.GPIOPull.OFF:
             pull = gpio.PUD_OFF
-        elif pull is keyboard.PullUpDown.UP:  # type: ignore[attr-defined]
+        elif pull is enums.GPIOPull.UP:
             pull = gpio.PUD_UP
-        elif pull is keyboard.PullUpDown.DOWN:  # type: ignore[attr-defined]
+        elif pull is enums.GPIOPull.DOWN:
             pull = gpio.PUD_DOWN
         else:
             raise ValueError(f"{self.name}: Invalid pull_up_down value")

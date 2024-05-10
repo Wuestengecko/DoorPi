@@ -8,6 +8,8 @@ import sys
 
 from doorpi import doorpi, metadata
 
+from . import TRACE_LEVEL
+
 # Regular log format
 LOG_FORMAT = "%(asctime)s [%(levelname)s]  \t[%(name)s] %(message)s"
 # Format when logging to the journal
@@ -50,9 +52,7 @@ def init_logger(args: argparse.Namespace) -> None:
             logging.getLogger(lg).setLevel(logging.DEBUG)
     if args.trace is not None:
         for lg in args.trace:
-            logging.getLogger(lg).setLevel(
-                logging.TRACE  # type: ignore[attr-defined]
-            )
+            logging.getLogger(lg).setLevel(TRACE_LEVEL)
 
 
 def parse_arguments() -> argparse.Namespace:

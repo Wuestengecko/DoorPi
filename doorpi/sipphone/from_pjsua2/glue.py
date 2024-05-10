@@ -2,7 +2,7 @@
 
 import logging
 import threading
-from typing import Any
+from typing import Any, cast
 
 import pjsua2 as pj
 
@@ -12,7 +12,7 @@ from doorpi.sipphone.abc import AbstractSIPPhone
 
 from . import EVENT_SOURCE, config, fileio, fire_event, worker
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 
 class Pjsua2(AbstractSIPPhone):

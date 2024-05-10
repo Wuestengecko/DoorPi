@@ -5,14 +5,14 @@ import string
 import threading
 import time
 from collections.abc import Callable, Mapping
-from typing import Any, Union
+from typing import Any, Union, cast
 
 import doorpi.actions
 import doorpi.event
 
 from . import log
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 ActionCallable = Callable[[str, Mapping[str, Any]], Any]
 RegistrableAction = Union[str, "doorpi.actions.Action", ActionCallable]

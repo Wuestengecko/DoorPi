@@ -56,7 +56,7 @@ import datetime
 import logging
 import threading
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, cast
 
 import serial  # pylint: disable=import-error
 
@@ -64,7 +64,7 @@ import doorpi
 
 from .abc import AbstractKeyboard
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 
 class SeriallyConnectedKeyboard(AbstractKeyboard):

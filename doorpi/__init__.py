@@ -7,17 +7,18 @@ __all__: list[str] = []
 
 INSTANCE: "doorpi.DoorPi"
 
-logging.TRACE = 5  # type: ignore
-logging.addLevelName(logging.TRACE, "TRACE")  # type: ignore
+TRACE_LEVEL = 5
+logging.TRACE = TRACE_LEVEL  # type: ignore[attr-defined]
+logging.addLevelName(TRACE_LEVEL, "TRACE")
 
 
-class DoorPiLogger(logging.getLoggerClass()):  # type: ignore
+class DoorPiLogger(logging.getLoggerClass()):  # type: ignore[misc]
     """Logger subclass that adds the TRACE level."""
 
     def trace(self, message: str, *args: Any, **kw: Any) -> None:
         """Logs with TRACE level."""
-        if self.isEnabledFor(logging.TRACE):  # type: ignore # pragma: no cover
-            self._log(logging.TRACE, message, args, **kw)  # type: ignore
+        if self.isEnabledFor(TRACE_LEVEL):  # pragma: no cover
+            self._log(TRACE_LEVEL, message, args, **kw)
 
 
 logging.setLoggerClass(DoorPiLogger)

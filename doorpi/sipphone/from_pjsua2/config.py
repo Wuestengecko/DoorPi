@@ -12,7 +12,7 @@ import doorpi
 if TYPE_CHECKING:
     from . import glue
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 
 def call_timeout() -> int:
@@ -98,7 +98,7 @@ def endpoint_config() -> pj.EpConfig:
     ep_cfg.logConfig.writer = logwriter
     # Bind the LogWriter's lifetime to the sipphone object, so that
     # it won't be garbage-collected prematurely.
-    sp: glue.Pjsua2 = doorpi.INSTANCE.sipphone  # type: ignore
+    sp = cast("glue.Pjsua2", doorpi.INSTANCE.sipphone)
     sp._logwriter = logwriter  # pylint: disable=protected-access
 
     return ep_cfg

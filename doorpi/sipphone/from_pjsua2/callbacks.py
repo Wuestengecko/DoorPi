@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pjsua2 as pj
 
@@ -15,7 +15,7 @@ from . import fire_event
 if TYPE_CHECKING:
     from . import glue
 
-LOGGER: doorpi.DoorPiLogger = logging.getLogger(__name__)  # type: ignore
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 
 class AccountCallback(pj.Account):
@@ -24,7 +24,7 @@ class AccountCallback(pj.Account):
 
     # pylint: disable-next=arguments-renamed
     def onIncomingCall(self, iprm: pj.OnIncomingCallParam) -> None:
-        sp: glue.Pjsua2 = doorpi.INSTANCE.sipphone  # type: ignore
+        sp = cast("glue.Pjsua2", doorpi.INSTANCE.sipphone)
         call = CallCallback(self, iprm.callId)
         callInfo = call.getInfo()
         oprm = pj.CallOpParam(False)
@@ -96,7 +96,7 @@ class CallCallback(pj.Call):
 
     def onCallState(self, prm: pj.OnCallStateParam) -> None:
         ci = self.getInfo()
-        sp: glue.Pjsua2 = doorpi.INSTANCE.sipphone  # type: ignore
+        sp = cast("glue.Pjsua2", doorpi.INSTANCE.sipphone)
 
         if ci.state == pj.PJSIP_INV_STATE_CALLING:
             LOGGER.debug("Call to %r is now calling", ci.remoteUri)
