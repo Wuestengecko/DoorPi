@@ -271,7 +271,7 @@ class DoorPi:
             duration = now - last
 
             if duration > tickrate:
-                skipped_ticks, duration = divmod(duration, tickrate)
+                skipped_ticks = duration // tickrate
                 LOGGER.warning(
                     "Tick took too long (%.1fms > %.1fms), skipping %d tick(s)",
                     duration * 1000,
