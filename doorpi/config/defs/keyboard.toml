@@ -39,6 +39,33 @@ Currently supported keyboard types:
 _type = "enum"
 _enumcls = "doorpi.keyboard.enums.KeyboardType"
 
+[config.keyboard."*".chip]
+_description = """[gpiod] Label of the GPIO chip device to use.
+
+Look into ``/sys/kernel/debug/gpio`` to find the label. You'll see lines
+similar to this (taken from a Raspberry Pi 3B):
+
+    gpiochip0: GPIOs 512-565, parent: platform/3f200000.gpio, pinctrl-bcm2835:
+     gpio-512 (ID_SDA              )
+     gpio-513 (ID_SCL              )
+     gpio-514 (GPIO2               )
+     gpio-515 (GPIO3               )
+     gpio-516 (GPIO4               )
+     ...
+    gpiochip1: GPIOs 566-567, parent: platform/soc:firmware:virtgpio, brcmvirt-gpio, can sleep:
+     gpio-XYZ (....)
+    gpiochip2: GPIOs 568-575, parent: platform/soc:firmware:expgpio, raspberrypi-exp-gpio, can sleep:
+     gpio-XYZ (....)
+
+In this case, there are three GPIO chips, with labels *pinctrl-bcm2835*,
+*brcmvirt-gpio* and *raspberry-exp-gpio* respectively.
+
+Use the parenthesized names when specifying input pins, i.e. use "GPIO2"
+instead of "gpio-514", and use "ID_SDA" and "ID_SCL" to refer to the Raspi's
+GPIO0 and GPIO1 (pin 27 and 28).
+"""
+_type = "string"
+
 [config.keyboard."*".bouncetime]
 _description = "Software debounce time (ms)"
 _default = 100

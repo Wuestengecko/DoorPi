@@ -216,6 +216,7 @@ class AbstractKeyboard:
         return value
 
     def _fire_event(self, event_name: str, pin: str) -> None:
+        LOGGER.debug("Firing event %r for pin %r", event_name, pin)
         eh = doorpi.INSTANCE.event_handler
         doorpi.INSTANCE.keyboard.last_key = self.last_key = (
             f"{self.name}.{pin}"
