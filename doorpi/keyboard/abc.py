@@ -78,7 +78,7 @@ class AbstractKeyboard:
 
         self.config = doorpi.INSTANCE.config.view(("keyboard", name))
         self._bouncetime = datetime.timedelta(
-            seconds=self.config["bouncetime"]
+            milliseconds=self.config["bouncetime"]
         )
         self._event_source = f"keyboard.{self.__class__.__name__}.{name}"
         self._inputs = list(self.config.view("input"))
