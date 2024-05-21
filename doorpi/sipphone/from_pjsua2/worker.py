@@ -64,9 +64,6 @@ class Worker:
 
         # register tick actions
         eh = doorpi.INSTANCE.event_handler
-        eh.register_action(
-            "OnTimeRapidTick", CheckAction(self.handleNativeEvents)
-        )
         eh.register_action("OnTimeTick", CheckAction(self.checkHangupAll))
         eh.register_action("OnTimeTick", CheckAction(self.checkCallTime))
         eh.register_action("OnTimeRapidTick", CheckAction(self.createCalls))

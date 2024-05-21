@@ -82,9 +82,8 @@ def endpoint_config() -> pj.EpConfig:
     stun_server = doorpi.INSTANCE.config["sipphone.stunserver"]
     if stun_server:
         ep_cfg.uaConfig.stunServer.append(stun_server)
-    # Ensure PJSIP callbacks will be handled by our python worker thread
-    ep_cfg.uaConfig.threadCnt = 0
-    ep_cfg.uaConfig.mainThreadOnly = True
+    ep_cfg.uaConfig.threadCnt = 4
+    ep_cfg.uaConfig.mainThreadOnly = False
 
     ep_cfg.logConfig.msgLogging = False  # Don't log full SIP messages
     ep_cfg.logConfig.level = 5
