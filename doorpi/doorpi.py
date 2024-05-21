@@ -22,6 +22,7 @@ import doorpi.config
 import doorpi.event.handler
 import doorpi.keyboard.handler
 import doorpi.metadata
+import doorpi.mqtt
 import doorpi.sipphone
 import doorpi.status.status_class
 import doorpi.status.systemd
@@ -41,6 +42,7 @@ class DoorPi:
     event_handler: doorpi.event.handler.EventHandler
     dpsd: doorpi.status.systemd.DoorPiSD
     keyboard: doorpi.keyboard.handler.KeyboardHandler
+    mqtt: doorpi.mqtt.MQTTClient | None
     sipphone: doorpi.sipphone.abc.AbstractSIPPhone
     webserver: threading.Thread | None
 
@@ -171,9 +173,13 @@ class DoorPi:
         # register modules
         self.webserver = doorpi.web.load()  # pylint: disable=E1111, E1128
         self.keyboard = doorpi.keyboard.load()
+        self.mqtt = doorpi.mqtt.load()  # pylint: disable=E1111, E1128
         self.sipphone = doorpi.sipphone.load()
+
         self.keyboard.start()
         self.sipphone.start()
+        if self.mqtt:
+            self.mqtt.start()
 
         self.__prepared = True
 
@@ -229,7 +235,7 @@ class DoorPi:
 
         # unregister modules
         self.__prepared = False
-        del self.sipphone, self.keyboard, self.webserver
+        del self.sipphone, self.keyboard, self.mqtt, self.webserver
 
         del doorpi.INSTANCE
         LOGGER.info("======== DoorPi completed shutting down ========")

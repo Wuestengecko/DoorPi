@@ -1,12 +1,46 @@
 [events]
 "OnMQTTMessage_[topic]" = "A message on the MQTT [topic] was received."
 
+[config.mqtt.broker]
+_description = """The MQTT broker on which to post general status updates.
+
+To specify a different port than the default, use the "hostname:port"
+format."""
+_type = "string"
+
+[config.mqtt.client_id]
+_description = "The client ID to use when connecting to the broker."
+_default = "DoorPi"
+
+[config.mqtt.topic_prefix]
+_description = "Prefix to prepend to all MQTT topics."
+_default = "doorpi/__status__"
+
+[config.mqtt.homeassistant]
+_description = "Publish Home Assistant discovery messages."
+_default = true
+
+[config.mqtt.qos]
+_description = """The quality of service level to send messages with.
+
+Must be 0, 1 or 2."""
+_default = 0
+
 [config.keyboard."*".broker]
-_description = "[mqtt] The MQTT broker to connect to."
+_description = """[mqtt] The MQTT broker to connect to.
+
+If not given, and a global MQTT broker was configured in ``[mqtt.broker]``,
+that connection will be reused. In this case, some connection related settings
+in the keyboard section will be ignored.
+
+Specifying the same broker both in ``[mqtt.broker]`` and here will result in
+two independent connections being established, which is not recommended."""
 _type = "string"
 
 [config.keyboard."*".client_id]
-_description = "[mqtt] The client ID to use when connecting to the broker."
+_description = """[mqtt] The client ID to use when connecting to the broker.
+
+Ignored if using the global broker."""
 _default = "DoorPi"
 
 [config.keyboard."*".topic_prefix]

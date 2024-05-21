@@ -11,11 +11,13 @@ from typing import Any
 
 import paho.mqtt.client as mqtt
 
+import doorpi
+from doorpi.mqtt import DEFAULT_PORT
+
 from . import abc
 
 RETRY_INTERVAL = 15  # seconds
 LOGGER = logging.getLogger(__name__)
-DEFAULT_PORT = 1883
 SLUG_RE = re.compile("[^a-zA-Z0-9_-]+")
 
 
@@ -45,13 +47,27 @@ class MQTTKeyboard(abc.AbstractKeyboard):
             raise ValueError(f"Invalid names in 'trigger_outputs': {bad_pins}")
 
         self.__availability_topic = f"{self._topic_prefix}/status"
-        self.__client = client = mqtt.Client(
-            client_id=self.config["client_id"]
-        )
-        client.will_set(f"{self._topic_prefix}/status", "offline", retain=True)
-        self.__did_connect = False
-        self.__connect_time = time.time()
-        self.__try_connect()
+        if "broker" in self.config:
+            self.__client = client = mqtt.Client(
+                client_id=self.config["client_id"],
+                callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
+            )
+            client.will_set(
+                f"{self._topic_prefix}/status", "offline", retain=True
+            )
+            self.__did_connect = False
+            self.__connect_time = time.time()
+            self.__try_connect()
+        else:
+            globalclient = doorpi.INSTANCE.mqtt
+            if globalclient is None:
+                raise ValueError(
+                    f"No global client and no individual broker configured"
+                    f" for MQTT keyboard {self.name}"
+                )
+            self.__client = globalclient.client
+            self.__did_connect = True
+            self.__setup_client()
 
     def __try_connect(self) -> None:
         client = self.__client
@@ -67,7 +83,10 @@ class MQTTKeyboard(abc.AbstractKeyboard):
             )
             return
         client.loop_start()
+        self.__did_connect = True
+        self.__setup_client()
 
+    def __setup_client(self) -> None:
         if self.config["homeassistant"]:
             self.__publish_discovery()
 
@@ -77,12 +96,12 @@ class MQTTKeyboard(abc.AbstractKeyboard):
         self.__client.message_callback_add(topic, self.__on_pin_message)
 
         self.publish_message(self.__availability_topic, "online")
-        self.__did_connect = True
 
     def _deactivate(self) -> None:
         self.publish_message(self.__availability_topic, "offline")
-        self.__client.disconnect()
-        self.__client.loop_stop()
+        if self.__client is not getattr(doorpi.INSTANCE.mqtt, "client", None):
+            self.__client.disconnect()
+            self.__client.loop_stop()
 
     def publish_message(
         self, topic: str, payload: str | bytes, retain: bool = True
@@ -108,6 +127,8 @@ class MQTTKeyboard(abc.AbstractKeyboard):
             "name": f"DoorPi {self.name}",
             "sw_version": imm.version("doorpi"),
         }
+        if self.__client is getattr(doorpi.INSTANCE.mqtt, "client", None):
+            config_device["via_device"] = "doorpi___status__"
         for name in self.inputs:
             slug = SLUG_RE.sub("-", name)
             cfg: dict[str, Any] = {
