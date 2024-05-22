@@ -1,8 +1,11 @@
 import logging
 import os
 import socket
+from typing import cast
 
-LOGGER = logging.getLogger(__name__)
+import doorpi
+
+LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
 
 
 class DoorPiSD:
@@ -98,7 +101,9 @@ class DoorPiSD:
         This is used internally, and should not be called directly.
         """
         if self.socket is None or self.sockaddr is None:
+            LOGGER.trace("sd-notify disabled, not sending: %s", msg)
             return
+        LOGGER.trace("Sending sd-notify message: %s", msg)
         try:
             self.socket.sendto(msg.encode("utf-8"), self.sockaddr)
         except OSError:
