@@ -11,7 +11,7 @@ routes = aiohttp.web.RouteTableDef()
 
 
 @routes.get("/control/trigger_event")
-async def _control_trigger_event(
+async def _control_trigger_event(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     try:
@@ -24,9 +24,7 @@ async def _control_trigger_event(
     if request.can_read_body or not isinstance(ev_extra, dict):
         raise aiohttp.web.HTTPBadRequest()
 
-    doorpi.INSTANCE.event_handler.fire_event(
-        ev_name, ev_source, extra=ev_extra
-    )
+    doorpi.INSTANCE.event_handler.fire_event(ev_name, ev_source, extra=ev_extra)
     return aiohttp.web.json_response(
         {"success": True, "message": "Event was fired"},
         dumps=json_encoder.encode,
@@ -34,7 +32,7 @@ async def _control_trigger_event(
 
 
 @routes.get("/control/config_value_get")
-async def _control_config_get(
+async def _control_config_get(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     if "key" not in request.query or request.can_read_body:
@@ -54,7 +52,7 @@ async def _control_config_get(
 
 
 @routes.get("/control/config_value_set")
-async def _control_config_set(
+async def _control_config_set(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     if (
@@ -79,7 +77,7 @@ async def _control_config_set(
 
 
 @routes.get("/control/config_value_delete")
-async def _control_config_del(
+async def _control_config_del(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     if "key" not in request.query or request.can_read_body:
@@ -100,7 +98,7 @@ async def _control_config_del(
 
 
 @routes.get("/control/config_save")
-async def _control_config_save(
+async def _control_config_save(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     if "key" not in request.query or request.can_read_body:
@@ -118,7 +116,7 @@ async def _control_config_save(
 
 
 @routes.get("/mirror")
-async def _mirror(
+async def _mirror(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     text = textwrap.dedent(
@@ -142,7 +140,6 @@ async def _mirror(
     )
 
     client = (
-        # pylint: disable=used-before-assignment # false positive
         transport.get_extra_info("peername")
         if (transport := request.transport) is not None
         else None
@@ -158,7 +155,7 @@ async def _mirror(
 
 
 @routes.get("/status")
-async def _status(
+async def _status(  # noqa: RUF029
     request: aiohttp.web.BaseRequest,
 ) -> aiohttp.web.StreamResponse:
     module: list[str] = request.query.getall("module", [])
@@ -167,14 +164,12 @@ async def _status(
 
     status = doorpi.INSTANCE.get_status(modules=module, name=name, value=value)
 
-    return aiohttp.web.json_response(
-        status.dictionary, dumps=json_encoder.encode
-    )
+    return aiohttp.web.json_response(status.dictionary, dumps=json_encoder.encode)
 
 
 class SetAsTupleJSONEncoder(json.JSONEncoder):
     def default(self, o: object) -> object:
-        if isinstance(o, (set, frozenset)):
+        if isinstance(o, set | frozenset):
             return tuple(o)
         return super().default(o)
 

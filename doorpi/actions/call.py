@@ -21,6 +21,7 @@ class CallAction(Action):
         self.__url = url
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         doorpi.INSTANCE.sipphone.call(self.__url)
 
     def __str__(self) -> str:
@@ -40,6 +41,7 @@ class CallFromFileAction(Action):
             LOGGER.warning("File %s does not exist (yet?)", self.__filename)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         uri = self.__filename.read_text(encoding="locale")
         if not uri:
             raise ValueError(f"File {self.__filename} is empty")
@@ -60,6 +62,7 @@ class HangupAction(Action):
         self.__waittime = float(waittime)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del extra
         if self.__waittime:
             LOGGER.info(
                 "[%s] Hanging up all calls in %s seconds",

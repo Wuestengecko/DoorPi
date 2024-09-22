@@ -45,4 +45,5 @@ class DummyPhone(AbstractSIPPhone):
         LOGGER.info("Hanging up all calls")
 
     def is_admin(self, uri: str) -> bool:
+        del uri
         return False

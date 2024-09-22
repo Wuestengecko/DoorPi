@@ -46,9 +46,7 @@ class MQTTClient:
             client_id=self.config["client_id"],
             callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
         )
-        self.client.will_set(
-            f"{self.topic_prefix}/status", "offline", retain=True
-        )
+        self.client.will_set(f"{self.topic_prefix}/status", "offline", retain=True)
 
         broker, _, port_ = self.config["broker"].partition(":")
         port = int(port_ or DEFAULT_PORT)
@@ -122,9 +120,7 @@ class MQTTClient:
         payload = comp.build_discovery() | overrides | {"unique_id": unique_id}
         self.publish_json(topic, payload)
 
-    def publish_json(
-        self, topic: str, payload: Any, *, retain: bool = True
-    ) -> None:
+    def publish_json(self, topic: str, payload: Any, *, retain: bool = True) -> None:
         payload = json.dumps(
             payload,
             separators=(",", ":"),
@@ -132,13 +128,9 @@ class MQTTClient:
         )
         self.publish(topic, payload, retain=retain)
 
-    def publish(
-        self, topic: str, payload: str, *, retain: bool = True
-    ) -> None:
+    def publish(self, topic: str, payload: str, *, retain: bool = True) -> None:
         LOGGER.debug("Publishing to %r: %r", topic, payload)
-        self.client.publish(
-            topic, payload, qos=self.config["qos"], retain=retain
-        )
+        self.client.publish(topic, payload, qos=self.config["qos"], retain=retain)
 
     def subscribe(
         self,
@@ -182,10 +174,9 @@ class _Component:
     def start(self) -> None:
         """Start the component.
 
-        In this method, components should subscribe to relevant events
-        and publish the first status message. This is called once during
-        startup, after publishing discovery messages (if enabled) and
-        before announcing to be online.
+        In this method, components should subscribe to relevant events and publish the
+        first status message. This is called once during startup, after publishing
+        discovery messages (if enabled) and before announcing to be online.
         """
 
 
@@ -226,12 +217,8 @@ class _ActiveCall(_Component):
         eh = doorpi.INSTANCE.event_handler
         eh.register_action("OnCallOutgoing", CallbackAction(self.__ringing))
         eh.register_action("OnCallConnect_S", CallbackAction(self.__connected))
-        eh.register_action(
-            "OnCallUnanswered", CallbackAction(self.__disconnected)
-        )
-        eh.register_action(
-            "OnCallDisconnect", CallbackAction(self.__disconnected)
-        )
+        eh.register_action("OnCallUnanswered", CallbackAction(self.__disconnected))
+        eh.register_action("OnCallDisconnect", CallbackAction(self.__disconnected))
 
     def __disconnected(self) -> None:
         self._client.publish_json(self._topic, {"state": "inactive"})
@@ -246,7 +233,7 @@ class _ActiveCall(_Component):
     def __connected(self) -> None:
         info = doorpi.INSTANCE.sipphone.dump_call()
         info.pop("total_time", None)
-        assert info["direction"] in ("incoming", "outgoing")
+        assert info["direction"] in {"incoming", "outgoing"}
         icon = "mdi:phone-" + info["direction"]
         self._client.publish_json(self._topic, {"state": "connected", **info})
         self._client.rediscover(self, {"icon": icon})
@@ -277,9 +264,7 @@ class _Uptime(_Component):
         )
 
     def __update(self) -> None:
-        self._client.publish(
-            self._topic, str(int(time.time()) - self.__starttime)
-        )
+        self._client.publish(self._topic, str(int(time.time()) - self.__starttime))
 
 
 class _Hangup(_Component):

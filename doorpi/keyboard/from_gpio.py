@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Literal
 
-import RPi.GPIO as gpio  # pylint: disable=import-error
+import RPi.GPIO as gpio
 
 from doorpi.keyboard import enums
 
@@ -47,8 +47,7 @@ class GPIOKeyboard(AbstractKeyboard):
                 gpio.BOTH,
                 callback=self.event_detect,
                 bouncetime=(
-                    self._bouncetime.days * 3600 * 24
-                    + self._bouncetime.seconds
+                    self._bouncetime.days * 3600 * 24 + self._bouncetime.seconds
                 ),
             )
 

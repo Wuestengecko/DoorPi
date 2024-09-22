@@ -1,7 +1,5 @@
 """Additional project metadata."""
 
-# pylint: disable=invalid-name, line-too-long
-
 from importlib import metadata as _meta
 
 try:
@@ -32,6 +30,4 @@ epilog = rf"""
 
 Author:     {distribution.metadata["Author"]} <{distribution.metadata["Author-email"]}>
 Supporter:  {{}}
-""".format(
-    "\n            ".join(supporters)
-)
+""".format("\n            ".join(supporters))

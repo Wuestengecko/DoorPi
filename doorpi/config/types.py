@@ -1,6 +1,5 @@
 """Classes that handle different configuration value types."""
 
-# pylint: disable=missing-function-docstring, too-few-public-methods
 from __future__ import annotations
 
 import abc
@@ -19,28 +18,26 @@ def gettype(typename: str) -> type[ValueType]:
 
 
 def infertype(default: Any) -> type[ValueType]:
-    # pylint: disable=too-many-return-statements
     if isinstance(default, bool):
         return Bool
-    elif isinstance(default, int):
+    if isinstance(default, int):
         return Int
-    elif isinstance(default, float):
+    if isinstance(default, float):
         return Float
-    elif isinstance(default, str):
+    if isinstance(default, str):
         return String
-    elif isinstance(default, datetime.datetime):
+    if isinstance(default, datetime.datetime):
         return DateTime
-    elif isinstance(default, datetime.date):
+    if isinstance(default, datetime.date):
         return Date
-    elif isinstance(default, datetime.time):
+    if isinstance(default, datetime.time):
         return Time
-    elif isinstance(default, collections.abc.Sequence):
+    if isinstance(default, collections.abc.Sequence):
         return List
-    else:
-        raise TypeError(f"Cannot infer from type {type(default).__name__}")
+    raise TypeError(f"Cannot infer from type {type(default).__name__}")
 
 
-class ValueType(metaclass=abc.ABCMeta):
+class ValueType(abc.ABC):
     """ABC for value types."""
 
     __slots__ = ()
@@ -70,7 +67,7 @@ class Anything(ValueType):
 class Int(ValueType):
     """An integer number (1, 2, -5, etc.)."""
 
-    __slots__ = ("_min", "_max")
+    __slots__ = ("_max", "_min")
 
     def __init__(self, name: Sequence[str], keydef: Mapping[str, Any]) -> None:
         super().__init__(name, keydef)
@@ -88,7 +85,7 @@ class Int(ValueType):
 class Float(ValueType):
     """A floating point number (1.2, -7.9, etc.)."""
 
-    __slots__ = ("_min", "_max")
+    __slots__ = ("_max", "_min")
 
     def __init__(self, name: Sequence[str], keydef: Mapping[str, Any]) -> None:
         super().__init__(name, keydef)
@@ -96,7 +93,7 @@ class Float(ValueType):
         self._max = keydef.get("_max", math.inf)
 
     def insertcast(self, value: Any) -> float:
-        if isinstance(value, (int, float)):
+        if isinstance(value, int | float):
             if self._min <= value <= self._max:
                 return float(value)
             raise ValueError(f"Number out of range: {value!r}")
@@ -106,8 +103,8 @@ class Float(ValueType):
 class Bool(ValueType):
     """A boolean value, i.e. true/false, on/off, 1/0 etc."""
 
-    __true_values = {"true", "yes", "on", "1", 1}
-    __false_values = {"false", "no", "off", "0", 0}
+    __true_values = frozenset({"true", "yes", "on", "1", 1})
+    __false_values = frozenset({"false", "no", "off", "0", 0})
     __slots__ = ()
 
     def insertcast(self, value: Any) -> bool:
@@ -134,14 +131,7 @@ class String(ValueType):
             return value
         if isinstance(
             value,
-            (
-                int,
-                float,
-                bool,
-                datetime.date,
-                datetime.datetime,
-                datetime.time,
-            ),
+            int | float | bool | datetime.date | datetime.datetime | datetime.time,
         ):
             return str(value)
         raise ValueError(f"Expected string, got {value!r}")
@@ -207,9 +197,7 @@ class List(ValueType):
         self._membertype = gettype(membertype)(name, keydef)
 
     def insertcast(self, value: Any) -> tuple[Any, ...]:
-        if not isinstance(value, collections.abc.Iterable) or isinstance(
-            value, str
-        ):
+        if not isinstance(value, collections.abc.Iterable) or isinstance(value, str):
             value = (value,)
         return tuple(self._membertype.insertcast(v) for v in value)
 
@@ -227,18 +215,12 @@ class Enum(ValueType):
         super().__init__(name, keydef)
         lastdot = keydef["_enumcls"].rfind(".")
         if lastdot < 0:
-            raise ValueError(
-                f"Invalid enumcls for {name!r}: {keydef['_enumcls']!r}"
-            )
+            raise ValueError(f"Invalid enumcls for {name!r}: {keydef['_enumcls']!r}")
         enumname = keydef["_enumcls"][lastdot + 1 :]
         module = importlib.import_module(keydef["_enumcls"][:lastdot])
         self._enum = getattr(module, enumname)
-        if not (
-            isinstance(self._enum, type) and issubclass(self._enum, enum.Enum)
-        ):
-            raise ValueError(
-                f"enumcls is not an Enum subclass: {keydef['_enumcls']!r}"
-            )
+        if not (isinstance(self._enum, type) and issubclass(self._enum, enum.Enum)):
+            raise ValueError(f"enumcls is not an Enum subclass: {keydef['_enumcls']!r}")
 
     def insertcast(self, value: Any) -> enum.Enum:
         if isinstance(value, self._enum):

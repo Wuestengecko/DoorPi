@@ -85,9 +85,7 @@ class Pjsua2(AbstractSIPPhone):
                 self.dialtone.stop()
             self._worker.shutdown()
             del self._worker
-        doorpi.INSTANCE.event_handler.unregister_source(
-            EVENT_SOURCE, force=True
-        )
+        doorpi.INSTANCE.event_handler.unregister_source(EVENT_SOURCE, force=True)
 
     def start(self) -> None:
         LOGGER.info("Starting PJSUA2 SIP phone")
@@ -100,9 +98,7 @@ class Pjsua2(AbstractSIPPhone):
             canonical_uri = self.canonicalize_uri(uri)
         except ValueError:
             return False
-        LOGGER.trace(
-            "About to call %s (canonicalized: %s)", uri, canonical_uri
-        )
+        LOGGER.trace("About to call %s (canonicalized: %s)", uri, canonical_uri)
 
         with self._call_lock:
             if self.current_call is not None:
@@ -144,9 +140,7 @@ class Pjsua2(AbstractSIPPhone):
         conf = doorpi.INSTANCE.config
         for admin_number in conf["sipphone.admins"]:
             if admin_number == "*":
-                LOGGER.trace(
-                    "Found '*' in config: everything is an admin number"
-                )
+                LOGGER.trace("Found '*' in config: everything is an admin number")
                 return True
             if canonical_uri == self.canonicalize_uri(admin_number):
                 LOGGER.trace("%s is admin number %s", uri, admin_number)
@@ -176,7 +170,5 @@ class Pjsua2(AbstractSIPPhone):
 
     def _register_thread(self, name: str) -> None:
         if self._worker is None:
-            raise RuntimeError(
-                "Cannot register threads before phone was started"
-            )
+            raise RuntimeError("Cannot register threads before phone was started")
         pj.Endpoint.instance().libRegisterThread(name)

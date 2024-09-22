@@ -1,7 +1,6 @@
 """Actions related to taking snapshots: snap_url, snap_picam."""
 
-# pylint: disable=import-outside-toplevel
-
+import contextlib
 import datetime
 import logging
 import pathlib
@@ -12,24 +11,22 @@ import doorpi
 
 from . import Action
 
-try:
+with contextlib.suppress(ImportError):
     import requests
-except ImportError:
-    pass
 
 LOGGER = logging.getLogger(__name__)
 DOORPI_SECTION = "DoorPi"
 
 
-class SnapshotAction(Action):  # pylint: disable=abstract-method
+class SnapshotAction(Action):
     """Base class for snapshotting actions."""
 
     @classmethod
     def cleanup(cls) -> None:
         """Cleans out the snapshot directory.
 
-        The oldest snapshots are deleted until the directory only
-        contains as many snapshots as set in the configuration.
+        The oldest snapshots are deleted until the directory only contains as many
+        snapshots as set in the configuration.
         """
         keep = doorpi.INSTANCE.config["snapshots.keep"]
         if keep <= 0:
@@ -55,10 +52,9 @@ class SnapshotAction(Action):  # pylint: disable=abstract-method
     @classmethod
     def get_next_path(cls) -> pathlib.Path:
         """Computes the next snapshot's path."""
-        path = cls.get_base_path() / datetime.datetime.now().strftime(
+        return cls.get_base_path() / datetime.datetime.now().strftime(
             "%Y-%m-%d %H:%M:%S.jpg"
         )
-        return path
 
     @classmethod
     def list_all(cls) -> list[pathlib.Path]:
@@ -78,6 +74,7 @@ class URLSnapshotAction(SnapshotAction):
         self.__url = url
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         response = requests.get(self.__url, stream=True, timeout=30)
         with self.get_next_path().open("wb") as output:
             for chunk in response.iter_content(1048576):  # 1 MiB chunks
@@ -98,10 +95,12 @@ class PicamSnapshotAction(SnapshotAction):
     def __init__(self) -> None:
         super().__init__()
         # Make sure picamera is importable
-        import picamera  # pylint: disable=import-error, unused-import
+        import picamera  # noqa: F401, PLC0415
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
-        import picamera  # pylint: disable=import-error
+        del event_id, extra
+
+        import picamera  # noqa: PLC0415
 
         with picamera.PiCamera() as cam:
             cam.resolution = (1024, 768)

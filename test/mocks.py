@@ -29,7 +29,6 @@ class DoorPiTestCase(unittest.TestCase):
     def setUp(self):
         global doorpi_instance
         doorpi_instance = None
-        # pylint: disable-next=consider-using-with
         self.tmpdir = TemporaryDirectory()
         self.oldpwd = os.getcwd()
         os.chdir(self.tmpdir.name)
@@ -56,7 +55,5 @@ def promise_deletion(obj, attr):
     try:
         yield None
     finally:
-        try:
+        with contextlib.suppress(AttributeError):
             delattr(obj, attr)
-        except AttributeError:
-            pass

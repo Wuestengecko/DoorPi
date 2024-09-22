@@ -55,6 +55,7 @@ class TriggeredOutAction(OutAction):
             )
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         self._setpin(self._value)
         self._int.clear()  # Make sure the flag is not set before waiting for it
         self._int.wait(timeout=self._holdtime)
@@ -72,20 +73,16 @@ class TriggeredOutAction(OutAction):
         return value
 
     def __repr__(self) -> str:
-        return "".join(
-            (
-                "out:",
-                ",".join(
-                    (
-                        self._pin,
-                        self._value,
-                        self._stopval,
-                        str(self._holdtime),
-                    )
-                ),
-                self._intpin or "",
-            )
-        )
+        return "".join((
+            "out:",
+            ",".join((
+                self._pin,
+                self._value,
+                self._stopval,
+                str(self._holdtime),
+            )),
+            self._intpin or "",
+        ))
 
 
 def instantiate(*args: str) -> Action:

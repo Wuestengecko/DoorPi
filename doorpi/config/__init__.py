@@ -154,4 +154,5 @@ The following types cannot be inferred and must be explicitly given:
         path points to a directory, it will be removed recursively.
 """
 
-from .configuration import Configuration, ConfigView
+from .configuration import Configuration as Configuration
+from .configuration import ConfigView as ConfigView

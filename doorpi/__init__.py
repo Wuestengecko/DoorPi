@@ -1,7 +1,7 @@
 """Provide intercomstation to the doorstation by VoIP."""
 
 import logging
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any
 
 __all__: list[str] = []
 

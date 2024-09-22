@@ -28,24 +28,21 @@ class DoorPiSD:
             except OSError:
                 LOGGER.exception("Unable to open notification socket")
         else:
-            LOGGER.info(
-                "No NOTIFY_SOCKET in environment, sd-notify protocol disabled"
-            )
+            LOGGER.info("No NOTIFY_SOCKET in environment, sd-notify protocol disabled")
 
     def ready(self) -> None:
         """Tell the service manager that we are ready.
 
-        Inform the manager that service startup has completed
-        successfully or that the service is done reloading its
-        configuration.
+        Inform the manager that service startup has completed successfully or that the
+        service is done reloading its configuration.
         """
         return self.__send("READY=1")
 
     def reloading(self) -> None:
         """Tell the service manager that we are reloading configuration.
 
-        Inform the service manager that we have begun reloading our
-        configuration files. Once done, `ready()` must be called again.
+        Inform the service manager that we have begun reloading our configuration files.
+        Once done, `ready()` must be called again.
         """
         return self.__send("RELOADING=1")
 
@@ -56,17 +53,17 @@ class DoorPiSD:
     def status(self, msg: str) -> None:
         """Describe the service state for humans.
 
-        Passes a human readable, single-line status string back to the
-        service manager that describes the current service state.
+        Passes a human readable, single-line status string back to the service manager
+        that describes the current service state.
         """
         return self.__send("STATUS={}".format(msg.replace("\n", "\\n")))
 
     def watchdog(self) -> None:
         """Tell the service manager that we are still alive.
 
-        Tell the manager to update its watchdog timestamp. This is the
-        keep-alive ping that a service needs to issue in regular
-        intervals if WatchdogSec= is enabled for it.
+        Tell the manager to update its watchdog timestamp. This is the keep-alive ping
+        that a service needs to issue in regular intervals if WatchdogSec= is enabled
+        for it.
         """
         return self.__send("WATCHDOG=1")
 
@@ -74,15 +71,13 @@ class DoorPiSD:
     def get_watchdog_timeout_usec() -> int | None:
         """Get the configured watchdog timeout.
 
-        Returns the configured watchdog timeout in microseconds. If
-        `watchdog()` is not issued within that time after the last
-        invocation, the service manager will fail this service. It is
-        recommended that a daemon sends a keep-alive ping every half of
-        the time returned here.
+        Returns the configured watchdog timeout in microseconds. If `watchdog()` is not
+        issued within that time after the last invocation, the service manager will fail
+        this service. It is recommended that a daemon sends a keep-alive ping every half
+        of the time returned here.
 
-        If the watchdog logic is disabled for this service, or the
-        corresponding environment variables were unset, this function
-        will return None.
+        If the watchdog logic is disabled for this service, or the corresponding
+        environment variables were unset, this function will return None.
         """
         if (
             "WATCHDOG_USEC" not in os.environ
@@ -107,6 +102,4 @@ class DoorPiSD:
         try:
             self.socket.sendto(msg.encode("utf-8"), self.sockaddr)
         except OSError:
-            LOGGER.exception(
-                "Unable to send status information to service manager"
-            )
+            LOGGER.exception("Unable to send status information to service manager")

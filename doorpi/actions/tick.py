@@ -38,6 +38,7 @@ class TickAction(Action):
             eh.register_event(f"OnTimeHour{j:02}", __name__)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         now = datetime.datetime.now()
 
         if now.year != self.__last_tick.year:

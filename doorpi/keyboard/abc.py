@@ -77,9 +77,7 @@ class AbstractKeyboard:
         LOGGER.debug("Creating %s", self)
 
         self.config = doorpi.INSTANCE.config.view(("keyboard", name))
-        self._bouncetime = datetime.timedelta(
-            milliseconds=self.config["bouncetime"]
-        )
+        self._bouncetime = datetime.timedelta(milliseconds=self.config["bouncetime"])
         self._event_source = f"keyboard.{self.__class__.__name__}.{name}"
         self._inputs = list(self.config.view("input"))
         self._outputs = dict.fromkeys(self.config.view("output"), False)
@@ -95,17 +93,13 @@ class AbstractKeyboard:
         for pin in self._inputs:
             for ev in events:
                 eh.register_event(f"{ev}_{pin}", self._event_source)
-                eh.register_event(
-                    f"{ev}_{self.name}.{pin}", self._event_source
-                )
+                eh.register_event(f"{ev}_{self.name}.{pin}", self._event_source)
 
         eh.register_action("OnShutdown", CallbackAction(self.destroy))
 
     def destroy(self) -> None:
         self._deactivate()
-        doorpi.INSTANCE.event_handler.unregister_source(
-            self._event_source, force=True
-        )
+        doorpi.INSTANCE.event_handler.unregister_source(self._event_source, force=True)
 
     def __str__(self) -> str:  # pragma: no cover
         return f"{self.name} keyboard ({self.type})"
@@ -113,15 +107,15 @@ class AbstractKeyboard:
     def _deactivate(self) -> None:
         """Deactivate the keyboard in preparation for shutdown.
 
-        This will be called right before actually deleting the keyboard,
-        and can be used e.g. to deactivate worker threads.
+        This will be called right before actually deleting the keyboard, and can be used
+        e.g. to deactivate worker threads.
         """
 
     def input(self, pin: str) -> bool:
         """Read an input pin.
 
-        This function returns the current value of the given input pin
-        as bool. If the pin does not exist, it should return False.
+        This function returns the current value of the given input pin as bool. If the
+        pin does not exist, it should return False.
         """
         if pin not in self._inputs:
             raise ValueError(f"Unknown input pin {self.name}.{pin}")
@@ -153,10 +147,10 @@ class AbstractKeyboard:
     def self_check(self) -> None:
         """Check the correct functioning of this keyboard.
 
-        This function will be periodically called to verify the keyboard
-        is still functional. It should not return any value.  In case
-        the keyboard is found to be dysfunctional, it should raise an
-        appropriate exception with a message describing the problem.
+        This function will be periodically called to verify the keyboard is still
+        functional. It should not return any value.  In case the keyboard is found to be
+        dysfunctional, it should raise an appropriate exception with a message
+        describing the problem.
         """
 
     # -----------------------------------------------------------------
@@ -202,12 +196,11 @@ class AbstractKeyboard:
     def _normalize(self, value: Any) -> bool:
         """Normalize the passed value to a bool.
 
-        This function normalizes an arbitrary value to a bool. If the
-        current keyboard's polarity is LOW, the value is also flipped.
+        This function normalizes an arbitrary value to a bool. If the current keyboard's
+        polarity is LOW, the value is also flipped.
 
-        This helper should be called immediately after reading a value
-        from an input pin, or immediately before writing the final value
-        to an output pin.
+        This helper should be called immediately after reading a value from an input
+        pin, or immediately before writing the final value to an output pin.
         """
         if not isinstance(value, bool):
             value = str(value).strip().lower() in HIGH_LEVEL
@@ -218,9 +211,7 @@ class AbstractKeyboard:
     def _fire_event(self, event_name: str, pin: str) -> None:
         LOGGER.debug("Firing event %r for pin %r", event_name, pin)
         eh = doorpi.INSTANCE.event_handler
-        doorpi.INSTANCE.keyboard.last_key = self.last_key = (
-            f"{self.name}.{pin}"
-        )
+        doorpi.INSTANCE.keyboard.last_key = self.last_key = f"{self.name}.{pin}"
 
         extra = self.additional_info
         eh.fire_event(event_name, self._event_source, extra=extra)

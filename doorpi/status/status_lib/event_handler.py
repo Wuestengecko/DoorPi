@@ -18,8 +18,7 @@ def get(
             source: eh.get_events_by_source(source) for source in eh.sources
         },
         "actions": lambda eh: {
-            event: list(map(str, actions))
-            for event, actions in eh.actions.items()
+            event: list(map(str, actions)) for event, actions in eh.actions.items()
         },
         "threads": lambda eh: str(eh.threads),
         "idle": operator.attrgetter("idle"),

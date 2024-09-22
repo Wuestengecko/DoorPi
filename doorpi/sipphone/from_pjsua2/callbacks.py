@@ -1,6 +1,5 @@
 """Callbacks from the native library."""
 
-# pylint: disable=protected-access, invalid-name
 from __future__ import annotations
 
 import logging
@@ -22,7 +21,6 @@ class AccountCallback(pj.Account):
     def __init__(self) -> None:
         pj.Account.__init__(self)
 
-    # pylint: disable-next=arguments-renamed
     def onIncomingCall(self, iprm: pj.OnIncomingCallParam) -> None:
         sp = cast("glue.Pjsua2", doorpi.INSTANCE.sipphone)
         call = CallCallback(self, iprm.callId)
@@ -42,13 +40,8 @@ class AccountCallback(pj.Account):
                 event = "OnCallReject"
             else:
                 with sp._call_lock:
-                    if (
-                        sp.current_call is not None
-                        and sp.current_call.isActive()
-                    ):
-                        LOGGER.info(
-                            "Busy-rejecting call from %s", callInfo.remoteUri
-                        )
+                    if sp.current_call is not None and sp.current_call.isActive():
+                        LOGGER.info("Busy-rejecting call from %s", callInfo.remoteUri)
                         oprm.statusCode = pj.PJSIP_SC_BUSY_HERE
                         event = "OnCallBusy"
                     else:
@@ -77,9 +70,7 @@ class CallCallback(pj.Call):
         super().__init__(acc, callId)
 
         self.__dtmf = ""
-        self.__possible_dtmf = doorpi.INSTANCE.config.view(
-            "sipphone.dtmf"
-        ).keys()
+        self.__possible_dtmf = doorpi.INSTANCE.config.view("sipphone.dtmf").keys()
         self.__fire_disconnect = False
 
     def __getAudioVideoMedia(self) -> tuple[pj.AudioMedia, pj.VideoMedia]:
@@ -137,9 +128,7 @@ class CallCallback(pj.Call):
                     sp._ringing_calls.remove(self)
 
                 if self.__fire_disconnect:
-                    LOGGER.trace(
-                        "Firing disconnect event for call to %r", ci.remoteUri
-                    )
+                    LOGGER.trace("Firing disconnect event for call to %r", ci.remoteUri)
                     fire_event("OnCallDisconnect", remote_uri=ci.remoteUri)
                 elif len(sp._ringing_calls) == 0:
                     LOGGER.info("No call was answered")
@@ -150,9 +139,7 @@ class CallCallback(pj.Call):
                         ci.remoteUri,
                     )
         else:
-            LOGGER.warning(
-                "Call to %r: unknown state %d", ci.remoteUri, ci.state
-            )
+            LOGGER.warning("Call to %r: unknown state %d", ci.remoteUri, ci.state)
 
     def onCallMediaState(self, prm: pj.OnCallMediaStateParam) -> None:
         del prm
@@ -200,9 +187,7 @@ class CallCallback(pj.Call):
 
         if exact:
             remoteUri = self.getInfo().remoteUri
-            fire_event(
-                f"OnDTMF_{self.__dtmf}", async_only=True, remote_uri=remoteUri
-            )
+            fire_event(f"OnDTMF_{self.__dtmf}", async_only=True, remote_uri=remoteUri)
             self.dialDtmf("11")
 
         if not prefix:

@@ -9,11 +9,11 @@ __all__ = [
 ]
 
 
-class AbstractSIPPhone(metaclass=abc.ABCMeta):  # pragma: no cover
+class AbstractSIPPhone(abc.ABC):  # pragma: no cover
     """Base class for all SIP phone modules.
 
-    This class defines and documents all public methods that a SIP phone
-    module implementation should expose.
+    This class defines and documents all public methods that a SIP phone module
+    implementation should expose.
     """
 
     @abc.abstractmethod
@@ -41,8 +41,8 @@ class AbstractSIPPhone(metaclass=abc.ABCMeta):  # pragma: no cover
     def start(self) -> None:
         """Start the phone module.
 
-        Starting the phone module performs all steps necessary for
-        DoorPi to make and receive calls.
+        Starting the phone module performs all steps necessary for DoorPi to make and
+        receive calls.
         """
 
     @abc.abstractmethod

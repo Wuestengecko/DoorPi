@@ -126,15 +126,13 @@ class TestConfigLoadSave(DoorPiTestCase):
 
     def test_config_can_be_saved_to_file_given_as_str(self):
         conf_obj = config.Configuration()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            with assert_no_raise(self):
-                conf_obj.save(str(pathlib.Path(tmpdir, "config.toml")))
+        with tempfile.TemporaryDirectory() as tmpdir, assert_no_raise(self):
+            conf_obj.save(str(pathlib.Path(tmpdir, "config.toml")))
 
     def test_config_can_be_saved_to_file_given_as_path(self):
         conf_obj = config.Configuration()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            with assert_no_raise(self):
-                conf_obj.save(pathlib.Path(tmpdir, "config.toml"))
+        with tempfile.TemporaryDirectory() as tmpdir, assert_no_raise(self):
+            conf_obj.save(pathlib.Path(tmpdir, "config.toml"))
 
     def test_config_can_be_saved_to_filelike(self):
         conf_obj = config.Configuration()
@@ -190,25 +188,21 @@ class TestConfigGetSet(DoorPiTestCase):
         for type_, value in values:
             with self.subTest(type=type_, value=value):
                 conf_obj = config.Configuration()
-                conf_obj.attach_defs(
-                    {
-                        "config": {
-                            "testkey": {"_type": type_},
-                        }
+                conf_obj.attach_defs({
+                    "config": {
+                        "testkey": {"_type": type_},
                     }
-                )
+                })
                 with self.assertRaises((TypeError, ValueError)):
                     conf_obj["testkey"] = value
 
     def test_set_values_can_be_retrieved(self):
         conf_obj = config.Configuration()
-        conf_obj.attach_defs(
-            {
-                "config": {
-                    "testkey": {"_type": "string"},
-                }
+        conf_obj.attach_defs({
+            "config": {
+                "testkey": {"_type": "string"},
             }
-        )
+        })
 
         conf_obj["testkey"] = "foo"
         self.assertEqual("foo", conf_obj["testkey"])
@@ -232,13 +226,11 @@ class TestConfigGetSet(DoorPiTestCase):
         for type_, configval, expected in values:
             with self.subTest(type=type_, value=configval):
                 conf_obj = config.Configuration()
-                conf_obj.attach_defs(
-                    {
-                        "config": {
-                            "testkey": {"_type": type_},
-                        }
+                conf_obj.attach_defs({
+                    "config": {
+                        "testkey": {"_type": type_},
                     }
-                )
+                })
                 conf_obj.load(io.StringIO(f"testkey = {configval!s}"))
 
                 actual = conf_obj["testkey"]
@@ -304,26 +296,22 @@ class TestConfigGetSet(DoorPiTestCase):
         for type_, testvalue, expected in values:
             with self.subTest(type=type_, value=testvalue):
                 conf_obj = config.Configuration()
-                conf_obj.attach_defs(
-                    {
-                        "config": {
-                            "testkey": {"_type": type_},
-                        }
+                conf_obj.attach_defs({
+                    "config": {
+                        "testkey": {"_type": type_},
                     }
-                )
+                })
                 conf_obj["testkey"] = testvalue
 
                 self.assertEqual(expected, conf_obj["testkey"])
 
     def test_reading_key_without_default_value_raises_KeyError(self):
         conf_obj = config.Configuration()
-        conf_obj.attach_defs(
-            {
-                "config": {
-                    "testkey": {"_type": "string"},
-                }
+        conf_obj.attach_defs({
+            "config": {
+                "testkey": {"_type": "string"},
             }
-        )
+        })
 
         self.assertRaises(KeyError, operator.itemgetter("testkey"), conf_obj)
 

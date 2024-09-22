@@ -48,9 +48,12 @@ class IPSConnector:
         )
 
     def _do_request(self, method: str, *prm: Any) -> dict[str, Any]:
-        payload = json.dumps(
-            {"method": method, "params": prm, "jsonrpc": "2.0", "id": 0}
-        ).encode("utf-8")
+        payload = json.dumps({
+            "method": method,
+            "params": prm,
+            "jsonrpc": "2.0",
+            "id": 0,
+        }).encode("utf-8")
 
         response = requests.post(
             self.config["webservice_url"],
@@ -106,6 +109,7 @@ class IPSSetValueAction(IPSConnector, Action):
         self.__value = value
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         self.set_value(self.__key, doorpi.INSTANCE.parse_string(self.__value))
 
     def __str__(self) -> str:
@@ -123,6 +127,7 @@ class IPSCallFromVariableAction(IPSConnector, Action):
         self.__key = int(key)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del extra
         vartype = self.variable_type(self.__key)
         if vartype is not IPSVariableType.STRING:
             raise ValueError(f"Variable {self.__key} is not a string")

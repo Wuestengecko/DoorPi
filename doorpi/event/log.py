@@ -21,9 +21,7 @@ class EventLog:
 
     def __init__(self, db: str) -> None:
         if not sqlite3.threadsafety:
-            raise RuntimeError(
-                "Your version of SQLite is not compiled thread-safe!"
-            )
+            raise RuntimeError("Your version of SQLite is not compiled thread-safe!")
 
         dbpath = pathlib.Path(db)
         dbpath.parent.mkdir(parents=True, exist_ok=True)
@@ -76,9 +74,7 @@ class EventLog:
                 (f"%{filter_}%",) * 4,
             ).fetchone()[0]
         except sqlite3.Error:
-            LOGGER.exception(
-                "Error counting event log with filter %r", filter_
-            )
+            LOGGER.exception("Error counting event log with filter %r", filter_)
             return -1
 
     def get_event_log(
@@ -122,15 +118,13 @@ class EventLog:
             )
 
             return tuple(
-                EventLogEntry(
-                    {
-                        "event_id": row[0],
-                        "fired_by": row[1],
-                        "event_name": row[2],
-                        "start_time": row[3],
-                        "additional_infos": row[4],
-                    }
-                )
+                EventLogEntry({
+                    "event_id": row[0],
+                    "fired_by": row[1],
+                    "event_name": row[2],
+                    "start_time": row[3],
+                    "additional_infos": row[4],
+                })
                 for row in cursor
             )
         except sqlite3.Error:
@@ -171,9 +165,7 @@ class EventLog:
                 "[%s] Cannot insert event %s into event log", event_id, event
             )
 
-    def log_action(
-        self, event_id: str, action_name: str, start_time: float
-    ) -> None:
+    def log_action(self, event_id: str, action_name: str, start_time: float) -> None:
         """Insert an executed action into the event log.
 
         Args:

@@ -1,6 +1,5 @@
 """File I/O related stuff, i.e. the dial tone player and call recorder."""
 
-# pylint: disable=protected-access, invalid-name
 import datetime
 import gc
 import logging
@@ -25,9 +24,7 @@ class DialTonePlayer:
     _target: pj.AudioMedia | None
     _level: float
 
-    def __init__(
-        self, filename: str | pathlib.Path | None, loudness: float
-    ) -> None:
+    def __init__(self, filename: str | pathlib.Path | None, loudness: float) -> None:
         eh = doorpi.INSTANCE.event_handler
 
         if filename is None:
@@ -35,11 +32,9 @@ class DialTonePlayer:
             ctx = resources.as_file(file)
             eh.register_action(
                 "OnShutdown",
-                CallbackAction(
-                    ctx.__exit__, None, None, None  # pylint: disable=no-member
-                ),
+                CallbackAction(ctx.__exit__, None, None, None),
             )
-            filename = ctx.__enter__()  # pylint: disable=no-member
+            filename = ctx.__enter__()
 
         self._player = pj.AudioMediaPlayer()
         self._target = None
@@ -66,9 +61,7 @@ class DialTonePlayer:
             return
 
         if self._target is None:
-            self._target = (
-                pj.Endpoint.instance().audDevManager().getPlaybackDevMedia()
-            )
+            self._target = pj.Endpoint.instance().audDevManager().getPlaybackDevMedia()
         self._player.startTransmit(self._target)
 
     def stop(self) -> None:
@@ -87,6 +80,7 @@ class CallRecorder:
     def __init__(
         self,
         path: pathlib.Path | None,
+        *,
         early: bool,
         keep: int,
     ) -> None:
@@ -137,12 +131,8 @@ class CallRecorder:
             doorpi.INSTANCE.sipphone,
         ).current_call
         if call is not None:
-            LOGGER.debug(
-                "Recording call to %s", repr(call.getInfo().remoteUri)
-            )
-            call._CallCallback__getAudioVideoMedia()[0].startTransmit(
-                self.__recorder
-            )
+            LOGGER.debug("Recording call to %s", repr(call.getInfo().remoteUri))
+            call._CallCallback__getAudioVideoMedia()[0].startTransmit(self.__recorder)
 
     def startEarly(self) -> None:
         """Start recording if configured to record while dialing."""

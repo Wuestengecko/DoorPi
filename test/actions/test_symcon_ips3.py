@@ -28,15 +28,13 @@ def fake_post(*args, data, **kw):
         return DummyResponse(json.dumps({"result": True}).encode("utf-8"))
     if data["method"] == "IPS_GetVariable":
         return DummyResponse(
-            json.dumps(
-                {
-                    "result": {
-                        "VariableValue": {
-                            "ValueType": symcon_ips3.IPSVariableType.STRING.value,
-                        },
-                    }
+            json.dumps({
+                "result": {
+                    "VariableValue": {
+                        "ValueType": symcon_ips3.IPSVariableType.STRING.value,
+                    },
                 }
-            ).encode("utf-8")
+            }).encode("utf-8")
         )
     if data["method"] == "GetValue":
         return DummyResponse(json.dumps({"result": "**1"}).encode("utf-8"))

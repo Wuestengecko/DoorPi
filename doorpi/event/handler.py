@@ -72,11 +72,7 @@ class EventHandler:
     @property
     def threads(self) -> list[threading.Thread]:
         """List event threads managed by the handler."""
-        return [
-            t
-            for t in threading.enumerate()
-            if t.name.startswith("DoorPi Event")
-        ]
+        return [t for t in threading.enumerate() if t.name.startswith("DoorPi Event")]
 
     @property
     def idle(self) -> bool:
@@ -103,9 +99,7 @@ class EventHandler:
         if source not in self.events[event]:
             self.events[event].add(source)
             if not suppress_logs:
-                LOGGER.debug(
-                    "Registered source %s for event %s", source, event
-                )
+                LOGGER.debug("Registered source %s for event %s", source, event)
         else:
             LOGGER.warning(
                 "Multiple registrations for event %s from source %s",
@@ -138,19 +132,13 @@ class EventHandler:
         suppress_logs = _suppress_logs(event)
 
         if source not in self.sources:
-            LOGGER.warning(
-                "Unknown event source %s, skipping %s", source, event
-            )
+            LOGGER.warning("Unknown event source %s, skipping %s", source, event)
             return
         if event not in self.events:
-            LOGGER.warning(
-                "Unknown event %s (from source %s), skipping", event, source
-            )
+            LOGGER.warning("Unknown event %s (from source %s), skipping", event, source)
             return
         if source not in self.events[event]:
-            LOGGER.warning(
-                "Source %s not registered for %s, skipping", source, event
-            )
+            LOGGER.warning("Source %s not registered for %s, skipping", source, event)
             return
 
         if event not in self.actions:
@@ -164,13 +152,11 @@ class EventHandler:
         if not suppress_logs:
             self.log.log_event(event_id, source, event, start_time, extra)
 
-        extra.update(
-            {
-                "last_fired": str(start_time),
-                "source": source,
-                "event_id": event_id,
-            }
-        )
+        extra.update({
+            "last_fired": str(start_time),
+            "source": source,
+            "event_id": event_id,
+        })
 
         # copy over info from last event run
         last_info = self.extra_info.get(event, {})
@@ -196,7 +182,7 @@ class EventHandler:
                     self.log.log_action(event_id, str(action), start_time)
             except doorpi.event.AbortEventExecution:
                 LOGGER.info("[%s] Aborting event execution early")
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 try:
                     LOGGER.exception(
                         '[%s] Error executing action "%s" for event %s',
@@ -204,7 +190,7 @@ class EventHandler:
                         action,
                         event,
                     )
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     LOGGER.exception("[%s] Error executing an action")
 
             if getattr(action, "oneshot", False):
@@ -222,9 +208,7 @@ class EventHandler:
     def _unregister_event(self, event: str, source: str) -> bool:
         suppress_logs = _suppress_logs(event)
         if not suppress_logs:
-            LOGGER.debug(
-                "Unregistering event %s from source %s", event, source
-            )
+            LOGGER.debug("Unregistering event %s from source %s", event, source)
 
         if event not in self.events:
             LOGGER.error("Attempt to unregister unknown event %s", event)
@@ -262,9 +246,7 @@ class EventHandler:
             force: If True, unregisters a source even when it still has
                 events associated.
         """
-        LOGGER.debug(
-            "Removing source %s%s", source, " with force" if force else ""
-        )
+        LOGGER.debug("Removing source %s%s", source, " with force" if force else "")
 
         events = self.get_events_by_source(source)
         if events:

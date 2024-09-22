@@ -66,9 +66,7 @@ from .abc import AbstractKeyboard
 LOGGER = logging.getLogger(__name__)
 
 
-class FilesystemKeyboard(
-    AbstractKeyboard, watchdog.events.FileSystemEventHandler
-):
+class FilesystemKeyboard(AbstractKeyboard, watchdog.events.FileSystemEventHandler):
     def __init__(self, name: str) -> None:
         super().__init__(name)
 
@@ -80,9 +78,7 @@ class FilesystemKeyboard(
         if not self.__base_path_input:
             raise ValueError(f"{self.name}: base_path_input must not be empty")
         if not self.__base_path_output:
-            raise ValueError(
-                f"{self.name}: base_path_output must not be empty"
-            )
+            raise ValueError(f"{self.name}: base_path_output must not be empty")
 
         self.__base_path_input.mkdir(parents=True, exist_ok=True)
         self.__base_path_output.mkdir(parents=True, exist_ok=True)
@@ -102,11 +98,8 @@ class FilesystemKeyboard(
         self.__observer.start()
 
     def destroy(self) -> None:
-        # pylint: disable=broad-except
         self._deactivate()
-        doorpi.INSTANCE.event_handler.unregister_source(
-            self._event_source, force=True
-        )
+        doorpi.INSTANCE.event_handler.unregister_source(self._event_source, force=True)
 
         for pin in self._inputs:
             try:
@@ -202,10 +195,7 @@ class FilesystemKeyboard(
             return
 
         pin = pathlib.Path(event.src_path)
-        if (
-            pin.name not in self._inputs
-            or pin.parent != self.__base_path_input
-        ):
+        if pin.name not in self._inputs or pin.parent != self.__base_path_input:
             LOGGER.warning(
                 "%s: Received unsolicited FileModifiedEvent for %s",
                 self.name,

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """The application launcher module."""
+
 import argparse
 import logging
 import logging.handlers
@@ -28,9 +29,9 @@ def init_logger(args: argparse.Namespace) -> None:
     if len(expected_fd) == 2:
         stat = os.fstat(1)  # stdout
         try:
-            journal = stat.st_dev == int(
-                expected_fd[0]
-            ) and stat.st_ino == int(expected_fd[1])
+            journal = stat.st_dev == int(expected_fd[0]) and stat.st_ino == int(
+                expected_fd[1]
+            )
         except ValueError:
             journal = False
 
@@ -43,9 +44,7 @@ def init_logger(args: argparse.Namespace) -> None:
         handler = logging.handlers.RotatingFileHandler(
             args.logfile, maxBytes=5_000_000, backupCount=10
         )
-        logging.basicConfig(
-            level=LOG_LEVEL, format=LOG_FORMAT, handlers=(handler,)
-        )
+        logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT, handlers=(handler,))
 
     if args.debug is not None:
         for lg in args.debug:
@@ -96,9 +95,10 @@ def parse_arguments() -> argparse.Namespace:
         help="Specify file to log into. If unspecified, log to stderr.",
     )
 
-    default_cfg = "/".join(
-        (sys.prefix if sys.prefix != "/usr" else "", "etc/doorpi/doorpi.ini")
-    )
+    default_cfg = "/".join((
+        sys.prefix if sys.prefix != "/usr" else "",
+        "etc/doorpi/doorpi.ini",
+    ))
     arg_parser.add_argument(
         "-c",
         "--configfile",

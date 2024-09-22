@@ -21,7 +21,6 @@ LOGGER = logging.getLogger(__name__)
 SLUG_RE = re.compile("[^a-zA-Z0-9_-]+")
 
 
-# pylint: disable-next=too-many-instance-attributes
 class MQTTKeyboard(abc.AbstractKeyboard):
     """The ``mqtt`` keyboard for DoorPi."""
 
@@ -52,9 +51,7 @@ class MQTTKeyboard(abc.AbstractKeyboard):
                 client_id=self.config["client_id"],
                 callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
             )
-            client.will_set(
-                f"{self._topic_prefix}/status", "offline", retain=True
-            )
+            client.will_set(f"{self._topic_prefix}/status", "offline", retain=True)
             self.__did_connect = False
             self.__connect_time = time.time()
             self.__try_connect()
@@ -76,7 +73,7 @@ class MQTTKeyboard(abc.AbstractKeyboard):
 
         try:
             client.connect(broker, port)
-        except Exception:  # pylint: disable=broad-exception-caught
+        except Exception:
             LOGGER.error(
                 "Failed to connect to broker, will retry in %ds",
                 RETRY_INTERVAL,
@@ -111,9 +108,7 @@ class MQTTKeyboard(abc.AbstractKeyboard):
             topic, payload, qos=self.config["qos"], retain=retain
         ).wait_for_publish()
 
-    def publish_json(
-        self, topic: str, payload: object, retain: bool = True
-    ) -> None:
+    def publish_json(self, topic: str, payload: object, retain: bool = True) -> None:
         self.publish_message(
             topic,
             json.dumps(payload, separators=(",", ":")),

@@ -14,7 +14,7 @@ CONTENT = """
 and some more !STUFF!
 
 Additionally, some strange characters:
-    \U0001F408 \r
+    \U0001f408 \r
 
 """
 

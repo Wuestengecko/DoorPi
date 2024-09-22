@@ -19,9 +19,8 @@ class LogAction(Action):
         self.__msg = ",".join(msg)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
-        LOGGER.info(
-            "[%s] %s", event_id, doorpi.INSTANCE.parse_string(self.__msg)
-        )
+        del extra
+        LOGGER.info("[%s] %s", event_id, doorpi.INSTANCE.parse_string(self.__msg))
 
     def __str__(self) -> str:
         return f"Log the message {self.__msg}"

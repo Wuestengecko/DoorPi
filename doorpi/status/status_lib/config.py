@@ -16,9 +16,7 @@ def get(
         except KeyError:
             pass
         else:
-            return_dict[section] = {
-                k: v for k, v in view.items() if k in value
-            }
+            return_dict[section] = {k: v for k, v in view.items() if k in value}
     return return_dict
 
 

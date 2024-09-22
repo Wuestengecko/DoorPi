@@ -35,9 +35,7 @@ class TestWaitEvent(DoorPiTestCase):
 
     @patch("threading.Event")
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
-    def test_firing_named_event_with_abort_aborts_event_execution(
-        self, _, Event
-    ):
+    def test_firing_named_event_with_abort_aborts_event_execution(self, _, Event):
         Event().wait.return_value = True
         ac = control.WaitEventAction("OtherEvent", "5", "abort")
         with self.assertRaises(AbortEventExecution):
@@ -55,9 +53,7 @@ class TestWaitEvent(DoorPiTestCase):
 
     @patch("threading.Event")
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
-    def test_firing_named_event_with_continue_continues_event_execution(
-        self, _, Event
-    ):
+    def test_firing_named_event_with_continue_continues_event_execution(self, _, Event):
         Event().wait.return_value = True
         ac = control.WaitEventAction("OtherEvent", "5", "continue")
         with assert_no_raise(self, cls=AbortEventExecution):

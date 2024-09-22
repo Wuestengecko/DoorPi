@@ -2,6 +2,7 @@
 
 import email.message
 import logging
+import pathlib
 import smtplib
 from collections.abc import Mapping
 from typing import Any
@@ -55,10 +56,8 @@ class MailAction(Action):
         self.__signature = cfg["signature"]
 
         if text.startswith("/"):
-            # Read actual text from file
             self.__textfile: str | None = text
-            with open(text, encoding="locale") as textfile:
-                self.__text = textfile.read()
+            self.__text = pathlib.Path(text).read_text(encoding="locale")
         else:
             self.__textfile = None
             self.__text = text
@@ -81,6 +80,7 @@ class MailAction(Action):
             self._start_session(smtp)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del extra
         msg = email.message.EmailMessage()
         if self.__from:
             msg["From"] = self.__from
@@ -109,10 +109,8 @@ class MailAction(Action):
                 )
             except IndexError:
                 LOGGER.error("[%s] No snapshots to attach to email", event_id)
-            except Exception:  # pylint: disable=broad-except
-                LOGGER.exception(
-                    "[%s] Cannot attach snapshot to email", event_id
-                )
+            except Exception:
+                LOGGER.exception("[%s] Cannot attach snapshot to email", event_id)
 
         session: smtplib.SMTP
         if self.__ssl:

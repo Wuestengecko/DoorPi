@@ -58,7 +58,7 @@ import threading
 from collections.abc import Iterable
 from typing import Any, cast
 
-import serial  # pylint: disable=import-error
+import serial
 
 import doorpi
 
@@ -81,9 +81,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
 
         self._input_max_size = self.config["input_buffer_size"]
         self._input_stop_flag = self.config["input_stop_flag"].encode("utf-8")
-        self._output_stop_flag = self.config["output_stop_flag"].encode(
-            "utf-8"
-        )
+        self._output_stop_flag = self.config["output_stop_flag"].encode("utf-8")
 
         if not port:
             raise ValueError(f"{self.name}: port must not be empty")
@@ -116,9 +114,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
         value = self._normalize(value)
 
         if not self._ser or not self._ser.isOpen():
-            LOGGER.error(
-                "%s: Cannot write to keyboard: connection not open", self.name
-            )
+            LOGGER.error("%s: Cannot write to keyboard: connection not open", self.name)
             return False
 
         if not value:
@@ -132,9 +128,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
 
     def self_check(self) -> None:
         if self._exception is not None:
-            raise RuntimeError(
-                f"{self.name}: Worker died"
-            ) from self._exception
+            raise RuntimeError(f"{self.name}: Worker died") from self._exception
         if not self._thread.is_alive():
             raise RuntimeError(
                 f"{self.name}: Worker found dead without exception information"
@@ -143,8 +137,8 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
     def read_serial(self) -> None:
         """Serial connection read function.
 
-        This function is run in a separate thread to listen for key
-        presses sent by the keyboard.
+        This function is run in a separate thread to listen for key presses sent by the
+        keyboard.
         """
         buflen = self._input_max_size
         buf = collections.deque[bytes](maxlen=buflen + 1)
@@ -152,9 +146,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
         try:
             while not self._shutdown:
                 chars = self._ser.read()
-                LOGGER.trace(
-                    "%s: Read %r from serial connection", self.name, chars
-                )
+                LOGGER.trace("%s: Read %r from serial connection", self.name, chars)
                 if not chars:
                     continue
                 buf += chars
@@ -176,23 +168,22 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
                     else:
                         self.last_key_time = now
                         # remove STOP flag
-                        for i in range(len(stopflag)):
+                        for _ in range(len(stopflag)):
                             buf.pop()
                         self.process_buffer(b"".join(buf))
                     buf.clear()
-        except Exception as ex:  # pylint: disable=broad-except
+        except Exception as ex:
             if not self._shutdown:
                 self._exception = ex
 
     def process_buffer(self, buf: bytes) -> None:
         """Process the buffer contents.
 
-        This function is called by the worker thread to process the
-        buffer contents and fire the appropriate events after a STOP
-        flag was received.
+        This function is called by the worker thread to process the buffer contents and
+        fire the appropriate events after a STOP flag was received.
 
-        The buffer is passed as undecoded bytes object. The passed
-        buffer does not include the STOP flag.
+        The buffer is passed as undecoded bytes object. The passed buffer does not
+        include the STOP flag.
         """
         decbuf = buf.decode("utf-8")
         for key in self._inputs:

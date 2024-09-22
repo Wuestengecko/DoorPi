@@ -13,9 +13,8 @@ LOGGER = logging.getLogger(__name__)
 class KeyboardHandler:
     """The keyboard handler.
 
-    This class is responsible for constructing the individual keyboard
-    instances, dispatching output events to and querying inputs from
-    them.
+    This class is responsible for constructing the individual keyboard instances,
+    dispatching output events to and querying inputs from them.
     """
 
     last_key: str | None
@@ -57,19 +56,13 @@ class KeyboardHandler:
         self.__keyboards = {}
 
         eh = doorpi.INSTANCE.event_handler
-        eh.register_action(
-            "OnTimeTick", doorpi.actions.CheckAction(self.self_check)
-        )
+        eh.register_action("OnTimeTick", doorpi.actions.CheckAction(self.self_check))
 
     def start(self) -> None:
         conf = doorpi.INSTANCE.config.view("keyboard")
-        LOGGER.info(
-            "Instantiating %d keyboard(s): %s",
-            len(conf),
-            ", ".join(conf.keys()),
-        )
+        LOGGER.info("Instantiating %d keyboard(s): %s", len(conf), ", ".join(conf))
 
-        for kbname in conf.keys():
+        for kbname in conf:
             self.__keyboards[kbname] = self.__load_keyboard(
                 kbname, conf[kbname, "type"].name
             )
@@ -84,7 +77,7 @@ class KeyboardHandler:
 
         try:
             return kb.input(pin)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             LOGGER.exception("Error reading from pin %s", pinpath)
         return False
 
@@ -96,21 +89,21 @@ class KeyboardHandler:
             return kb.output(pin, value)
         except KeyError:
             LOGGER.exception("Unknown keyboard or pin: %s", pinpath)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             LOGGER.exception("Cannot output to pin %s", pinpath)
         return False
 
     def self_check(self) -> None:
         """Checks integrity of this handler and all attached keyboards.
 
-        If a keyboard fails its self check, it will be logged and the
-        program will be terminated.
+        If a keyboard fails its self check, it will be logged and the program will be
+        terminated.
         """
         abort = False
         for kbname, kb in self.__keyboards.items():
             try:
                 kb.self_check()
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 LOGGER.exception("Keyboard %s failed self check", kbname)
                 abort = True
         if abort:
@@ -124,9 +117,7 @@ class KeyboardHandler:
         """
         pins = {}
         for kbname, kbaliases in self.__aliases.items():
-            pins.update(
-                {alias: f"{kbname}.{pin}" for alias, pin in kbaliases.items()}
-            )
+            pins.update({alias: f"{kbname}.{pin}" for alias, pin in kbaliases.items()})
         return pins
 
     def _decode_pinpath(
@@ -149,8 +140,6 @@ class KeyboardHandler:
 
         return kb, kbname, pin
 
-    def get_keyboard(
-        self, kbname: str
-    ) -> doorpi.keyboard.abc.AbstractKeyboard:
+    def get_keyboard(self, kbname: str) -> doorpi.keyboard.abc.AbstractKeyboard:
         """Retrieve a keyboard instance by its name."""
         return self.__keyboards[kbname]

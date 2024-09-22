@@ -1,6 +1,5 @@
 """The Worker class."""
 
-# pylint: disable=protected-access, invalid-name
 from __future__ import annotations
 
 import logging
@@ -37,9 +36,7 @@ class Worker:
         # events will be handled here, and not by any native threads.
         self.__ep.libCreate()
         self.__ep.libInit(config.endpoint_config())
-        self.__ep.transportCreate(
-            pj.PJSIP_TRANSPORT_UDP, config.transport_config()
-        )
+        self.__ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, config.transport_config())
         config.setup_audio(self.__ep)
         self.__ep.libStart()
 
@@ -72,9 +69,7 @@ class Worker:
 
     def shutdown(self) -> None:
         """Destroys the native library."""
-        doorpi.INSTANCE.event_handler.fire_event_sync(
-            "OnSIPPhoneDestroy", EVENT_SOURCE
-        )
+        doorpi.INSTANCE.event_handler.fire_event_sync("OnSIPPhoneDestroy", EVENT_SOURCE)
         self.__ep.libDestroy()
 
     def handleNativeEvents(self) -> None:
@@ -115,10 +110,7 @@ class Worker:
 
     def checkCallTime(self) -> None:
         """Check all current calls and enforce call time restrictions."""
-        if (
-            self.__phone.current_call is None
-            and len(self.__phone._ringing_calls) == 0
-        ):
+        if self.__phone.current_call is None and len(self.__phone._ringing_calls) == 0:
             return
         with self.__phone._call_lock:
             call = self.__phone.current_call
@@ -141,7 +133,7 @@ class Worker:
             else:
                 synthetic_disconnect = False
                 prm = pj.CallOpParam()
-                for call in self.__phone._ringing_calls:
+                for call in list(self.__phone._ringing_calls):
                     try:
                         ci = call.getInfo()
                         if ci.totalDuration.sec >= self.__config["ringtime"]:
@@ -163,10 +155,7 @@ class Worker:
                                 "Can't get info for a call: %s", err.reason
                             )
                         self.__phone._ringing_calls.remove(call)
-                if (
-                    synthetic_disconnect
-                    and len(self.__phone._ringing_calls) == 0
-                ):
+                if synthetic_disconnect and len(self.__phone._ringing_calls) == 0:
                     # Last ringing call was cancelled
                     fire_event("OnCallUnanswered")
 

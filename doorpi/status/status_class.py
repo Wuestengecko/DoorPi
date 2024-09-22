@@ -53,19 +53,15 @@ class DoorPiStatus:
                 LOGGER.warning("Skipping unknown status module %s", module)
                 continue
             try:
-                mod = importlib.import_module(
-                    f"doorpi.status.status_lib.{module}"
-                )
+                mod = importlib.import_module(f"doorpi.status.status_lib.{module}")
                 self.dictionary[module] = mod.get(
                     doorpi_obj=doorpi_obj, name=name, value=value
                 )
-            except Exception:  # pylint: disable=broad-except
-                LOGGER.exception(
-                    "Cannot collect status information for %s", module
-                )
+            except Exception:
+                LOGGER.exception("Cannot collect status information for %s", module)
                 self.dictionary[module] = {
                     "Error": f"Could not collect information about {module}"
                 }
 
 
-collect_status = DoorPiStatus  # pylint: disable=invalid-name
+collect_status = DoorPiStatus

@@ -22,7 +22,7 @@ class TestActionCall(DoorPiTestCase):
 class TestActionFileCallValue(DoorPiTestCase):
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
     def test_instantiation(self, instance):
-        with NamedTemporaryFile(mode="w") as tmpfile:
+        with NamedTemporaryFile(mode="w", encoding="utf-8") as tmpfile:
             tmpfile.write(SIPURL)
 
             call.CallFromFileAction(tmpfile.name)
@@ -30,7 +30,7 @@ class TestActionFileCallValue(DoorPiTestCase):
 
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
     def test_action(self, instance):
-        with NamedTemporaryFile(mode="w") as tmpfile:
+        with NamedTemporaryFile(mode="w", encoding="utf-8") as tmpfile:
             tmpfile.write(SIPURL)
             tmpfile.flush()
 
@@ -40,7 +40,7 @@ class TestActionFileCallValue(DoorPiTestCase):
 
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
     def test_emptyfile(self, _):
-        with NamedTemporaryFile(mode="w") as tmpfile:
+        with NamedTemporaryFile(mode="w", encoding="utf-8") as tmpfile:
             ac = call.CallFromFileAction(tmpfile.name)
             with self.assertRaises(ValueError):
                 ac(EVENT_ID, EVENT_EXTRA)

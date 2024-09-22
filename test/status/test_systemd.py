@@ -64,14 +64,12 @@ class TestDoorPiSD(DoorPiTestCase):
         with self.assertLogs("doorpi.status.systemd", "INFO"):
             dpsd = DoorPiSD()
 
-        mocksock.assert_called_once_with(
-            family=socket.AF_UNIX, type=socket.SOCK_DGRAM
-        )
+        mocksock.assert_called_once_with(family=socket.AF_UNIX, type=socket.SOCK_DGRAM)
 
         dpsd.ready()
         dpsd.reloading()
         dpsd.stopping()
-        dpsd.status("\U0001F408\n")
+        dpsd.status("\U0001f408\n")
         dpsd.watchdog()
 
         self.assertEqual(
@@ -82,7 +80,7 @@ class TestDoorPiSD(DoorPiTestCase):
                 ((b"STOPPING=1", self.expected_socket_path),),
                 (
                     (
-                        "STATUS=\U0001F408\\n".encode(),
+                        "STATUS=\U0001f408\\n".encode(),
                         self.expected_socket_path,
                     ),
                 ),

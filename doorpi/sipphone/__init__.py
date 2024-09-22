@@ -1,4 +1,3 @@
-# noqa: D214, D410, D411
 """The SIP phone container module for DoorPi.
 
 A SIP phone module is required for DoorPi to make any outgoing calls
@@ -59,10 +58,9 @@ A proper SIP phone module will fire these events during its life cycle:
     - "uri": The caller's URI (canonicalized)
 - OnDTMF, OnDTMF_<seq>:
   Fired when the DTMF sequence ``<seq>`` was received.
-"""
+"""  # noqa: D214, D410, D411
 
 import importlib
-import logging
 import sys
 
 import doorpi
@@ -90,6 +88,4 @@ def load() -> AbstractSIPPhone:
     try:
         return entrypoint.load()()
     except ImportError as err:
-        raise RuntimeError(
-            f"Failed to load sip phone module {sipphone_name}"
-        ) from err
+        raise RuntimeError(f"Failed to load sip phone module {sipphone_name}") from err

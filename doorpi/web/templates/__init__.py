@@ -1,10 +1,9 @@
 """Templates and resources for DoorPiWeb."""
 
 import mimetypes
-import pathlib
 from collections.abc import Callable
 from importlib import resources
-from typing import Optional, Tuple, TypeVar, Union
+from typing import TypeVar
 
 import jinja2
 

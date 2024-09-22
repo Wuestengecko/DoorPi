@@ -18,6 +18,7 @@ class OSExecuteAction(Action):
         self.__cmd = ",".join(cmd)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del extra
         LOGGER.info("[%s] Executing shell command: %s", event_id, self.__cmd)
         result = subprocess.run(self.__cmd, shell=True, check=False)
 

@@ -13,9 +13,7 @@ def get(
     del doorpi_obj, name, value
 
     path = str(doorpi.actions.snapshot.SnapshotAction.get_base_path())
-    files: Iterable[str] = map(
-        str, doorpi.actions.snapshot.SnapshotAction.list_all()
-    )
+    files: Iterable[str] = map(str, doorpi.actions.snapshot.SnapshotAction.list_all())
     # because path is added by webserver automatically
     if path.find("DoorPiWeb"):
         changedpath = path[path.find("DoorPiWeb") + len("DoorPiWeb") :]

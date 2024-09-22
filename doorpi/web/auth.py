@@ -36,23 +36,20 @@ class Session:
 @aiohttp.web.middleware
 async def dpw_auth(
     request: aiohttp.web.Request,
-    handler: Callable[
-        [aiohttp.web.Request], Awaitable[aiohttp.web.StreamResponse]
-    ],
+    handler: Callable[[aiohttp.web.Request], Awaitable[aiohttp.web.StreamResponse]],
 ) -> aiohttp.web.StreamResponse:
     """The DoorPiWeb Authentication middleware."""
     if is_public_resource(request) or is_user_authorized(request):
         return await handler(request)
-    else:
-        return aiohttp.web.Response(
-            text="401: Unauthorized",
-            status=401,
-            reason="UNAUTHORIZED",
-            content_type="text/plain",
-            headers={
-                "WWW-Authenticate": 'Basic realm="DoorPi Web", charset="UTF-8"',
-            },
-        )
+    return aiohttp.web.Response(
+        text="401: Unauthorized",
+        status=401,
+        reason="UNAUTHORIZED",
+        content_type="text/plain",
+        headers={
+            "WWW-Authenticate": 'Basic realm="DoorPi Web", charset="UTF-8"',
+        },
+    )
 
 
 def is_public_resource(request: aiohttp.web.Request) -> bool:
@@ -107,16 +104,13 @@ def get_user_session(
 
     try:
         user, passwd = (
-            auth[len("Basic ") :]
-            .encode("ascii")
-            .decode("base64")
-            .split(":", 1)
+            auth[len("Basic ") :].encode("ascii").decode("base64").split(":", 1)
         )
     except Exception:
         raise aiohttp.web.HTTPBadRequest() from None
 
     try:
-        expected_passwd = request.app["doorpi_web_config"][("users", user)]
+        expected_passwd = request.app["doorpi_web_config"]["users", user]
     except KeyError:
         doorpi.INSTANCE.event_handler.fire_event(
             "OnWebAuthUnknownUser",
@@ -152,19 +146,13 @@ def create_session(username: str, request: aiohttp.web.Request) -> Session:
     """Create a new session for ``username``."""
     cfg = request.app["doorpi_web_conf"]
     usergroups = frozenset(
-        group
-        for group, users in cfg.view("groups").items()
-        if username in users
+        group for group, users in cfg.view("groups").items() if username in users
     )
     readable = frozenset(
-        area
-        for area, groups in cfg.view("readaccess").items()
-        if usergroups & groups
+        area for area, groups in cfg.view("readaccess").items() if usergroups & groups
     )
     writable = frozenset(
-        area
-        for area, groups in cfg.view("writeaccess").items()
-        if usergroups & groups
+        area for area, groups in cfg.view("writeaccess").items() if usergroups & groups
     )
     return Session(
         username,

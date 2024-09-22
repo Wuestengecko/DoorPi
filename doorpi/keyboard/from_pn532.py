@@ -1,4 +1,3 @@
-# noqa: D405, D411, D416
 """PN532 NFC keyboard module.
 
 > **Warning**: This keyboard module has not yet been extensively
@@ -87,7 +86,7 @@ you will also need the libnfc and nfcpy for this to work
    copy source-dir to pythons libdir:
    sudo cp -r nfc /usr/local/lib/python2.7/dist-packages/nfc   <--- CHECKEN!
 /TODO
-"""
+"""  # noqa: D405, D411, D416
 
 import datetime
 import logging
@@ -95,7 +94,7 @@ import re
 import threading
 from typing import Any
 
-import nfc  # pylint: disable=import-error
+import nfc
 
 import doorpi
 
@@ -107,9 +106,7 @@ LOGGER = logging.getLogger(__name__)
 class PN532Keyboard(AbstractKeyboard):
     def __init__(self, name: str) -> None:
         super().__init__(name, events=("OnKeyPressed",))
-        doorpi.INSTANCE.event_handler.register_event(
-            "OnTagUnknown", self._event_source
-        )
+        doorpi.INSTANCE.event_handler.register_event("OnTagUnknown", self._event_source)
 
         port = re.sub(r"^/dev/tty", "", self.config["port"])
         self.__device = f"tty:{port}:pn532"
@@ -128,9 +125,7 @@ class PN532Keyboard(AbstractKeyboard):
 
     def self_check(self) -> None:
         if self.__exception is not None:
-            raise RuntimeError(
-                f"{self.name}: Worker died"
-            ) from self.__exception
+            raise RuntimeError(f"{self.name}: Worker died") from self.__exception
         if not self.__thread.is_alive():
             raise RuntimeError(
                 f"{self.name}: Worker found dead without exception information"
@@ -141,7 +136,7 @@ class PN532Keyboard(AbstractKeyboard):
         try:
             while not self.__shutdown:
                 self.__frontend.connect(rdwr={"on-connect": self.on_connect})
-        except Exception as ex:  # pylint: disable=broad-except
+        except Exception as ex:
             self.__exception = ex
 
     def on_connect(self, tag: Any) -> bool:

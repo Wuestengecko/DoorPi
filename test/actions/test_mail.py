@@ -48,9 +48,7 @@ class TestMailAction(DoorPiTestCase):
             200,
             b"OK",
         )
-        ac = mail.MailAction(
-            "test@localhost", "Test subject", "Test body", "false"
-        )
+        ac = mail.MailAction("test@localhost", "Test subject", "Test body", "false")
 
         with self.assertLogs("doorpi.actions.mail", "INFO"):
             ac(EVENT_ID, EVENT_EXTRA)
@@ -76,9 +74,7 @@ class TestMailAction(DoorPiTestCase):
         snapshot_file = snapshot.SnapshotAction.get_next_path()
         snapshot_file.touch()
 
-        ac = mail.MailAction(
-            "test@localhost", "Test subject", "Test body", "true"
-        )
+        ac = mail.MailAction("test@localhost", "Test subject", "Test body", "true")
         with self.assertLogs("doorpi.actions.mail", "INFO"):
             ac(EVENT_ID, EVENT_EXTRA)
 

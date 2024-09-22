@@ -66,7 +66,8 @@ class GPIODKeyboard(AbstractKeyboard):
             )
         LOGGER.debug("Received access to lines: %s", self.__lines.lines)
         self.__offset2line = {
-            o: str(l) for o, l in zip(self.__lines.offsets, self.__lines.lines)
+            o: str(ln)
+            for o, ln in zip(self.__lines.offsets, self.__lines.lines, strict=True)
         }
         self._input_states = dict.fromkeys(self._inputs, False)
 

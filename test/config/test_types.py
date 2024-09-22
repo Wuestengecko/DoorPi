@@ -26,13 +26,11 @@ class ConfigTypes(DoorPiTestCase):
         for default, type_ in values:
             with self.subTest(default=default, type=type_):
                 conf_obj = config.Configuration()
-                conf_obj.attach_defs(
-                    {
-                        "config": {
-                            "key": {"_default": default},
-                        }
+                conf_obj.attach_defs({
+                    "config": {
+                        "key": {"_default": default},
                     }
-                )
+                })
                 keydef, _ = conf_obj.keydef("key")
                 self.assertIsInstance(keydef["_type"], type_)
 

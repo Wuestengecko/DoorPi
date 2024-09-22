@@ -16,9 +16,7 @@ def get(
         "current_call": operator.methodcaller("dump_call"),
     }
     return {
-        n: status_getters[n](doorpi_obj.sipphone)
-        for n in name
-        if n in status_getters
+        n: status_getters[n](doorpi_obj.sipphone) for n in name if n in status_getters
     }
 
 

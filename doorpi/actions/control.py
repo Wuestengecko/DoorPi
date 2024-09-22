@@ -19,6 +19,7 @@ class SleepAction(Action):
         self.__time = float(time)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         sleep(self.__time)
 
     def __str__(self) -> str:
@@ -44,6 +45,7 @@ class WaitEventAction(Action):
         doorpi.INSTANCE.event_handler.actions[eventname].insert(0, self.__cb)
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         self.__flag.clear()
 
         try:

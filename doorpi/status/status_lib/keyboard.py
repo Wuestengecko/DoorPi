@@ -10,15 +10,13 @@ def get(
     value: Iterable[str],
 ) -> dict[str, Any]:
     status_getters = {
-        "name": lambda kb: "Keyboard handler",
+        "name": lambda _: "Keyboard handler",
         "input": lambda kb: {pin: kb.input(pin) for pin in value},
     }
     if not name:
         name = status_getters.keys()
     return {
-        n: status_getters[n](doorpi_obj.keyboard)
-        for n in name
-        if n in status_getters
+        n: status_getters[n](doorpi_obj.keyboard) for n in name if n in status_getters
     }
 
 

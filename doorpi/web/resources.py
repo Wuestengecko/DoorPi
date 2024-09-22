@@ -49,9 +49,8 @@ async def _resource(
     path = pathlib.PurePosixPath(request.path)
     if path.suffix in parsable_file_extensions:
         return await _resource_template(request)
-    else:
-        resource = templates.get_resource(request.path)
-        return aiohttp.web.Response(body=resource[0], content_type=resource[1])
+    resource = templates.get_resource(request.path)
+    return aiohttp.web.Response(body=resource[0], content_type=resource[1])
 
 
 async def _resource_template(
@@ -64,9 +63,7 @@ async def _resource_template(
             "doorpi": doorpi.INSTANCE,
             "metadata": doorpi.metadata.distribution.metadata,
             "params": request.query,
-            "code_min": ("", ".min")[
-                logger.getEffectiveLevel() <= logging.DEBUG
-            ],
+            "code_min": ("", ".min")[logger.getEffectiveLevel() <= logging.DEBUG],
             "proginfo": (
                 f"{doorpi.metadata.distribution.metadata['Name']}"
                 f" - version: {doorpi.metadata.distribution.metadata['Version']}"

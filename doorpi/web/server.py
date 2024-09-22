@@ -17,9 +17,7 @@ SD_LISTEN_FDS_START = 3  # defined in <systemd/sd-daemon.h>
 
 logger = logging.getLogger(__name__)
 
-RequestHandler = Callable[
-    [aiohttp.web.Request], Awaitable[aiohttp.web.StreamResponse]
-]
+RequestHandler = Callable[[aiohttp.web.Request], Awaitable[aiohttp.web.StreamResponse]]
 
 
 async def run() -> None:

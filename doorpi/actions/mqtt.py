@@ -45,6 +45,7 @@ class MQTTPublishAction(Action):
         )
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del event_id, extra
         payload = doorpi.INSTANCE.parse_string(self.payload)
         self.keyboard.publish_message(self.topic, payload, retain=self.retain)
 

@@ -1,4 +1,6 @@
+from importlib.util import find_spec
 from pathlib import Path
+from unittest import skipIf
 from unittest.mock import patch
 
 from doorpi.actions import snapshot
@@ -18,9 +20,7 @@ class SnapshotTestCase(DoorPiTestCase):
         super().setUp()
         self.snap_path = Path.cwd() / "snapshots"
         self.snap_path.mkdir()
-        Path("doorpi.ini").write_text(
-            CONFIG.format(self.snap_path), encoding="locale"
-        )
+        Path("doorpi.ini").write_text(CONFIG.format(self.snap_path), encoding="locale")
 
 
 class TestURLSnapshotAction(SnapshotTestCase):
@@ -29,39 +29,23 @@ class TestURLSnapshotAction(SnapshotTestCase):
     def test_action(self, _, get):
         ac = snapshot.URLSnapshotAction("http://localhost")
         ac(EVENT_ID, EVENT_EXTRA)
-        get.assert_called_once_with(
-            "http://localhost", stream=True, timeout=30
-        )
+        get.assert_called_once_with("http://localhost", stream=True, timeout=30)
 
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
     def test_cleanup(self, _):
         for i in range(60):
-            (self.snap_path / f"1970-01-01 00:{i:02d}:00.jpg").open(
-                "w"
-            ).close()
+            (self.snap_path / f"1970-01-01 00:{i:02d}:00.jpg").open("w").close()
 
         with self.assertLogs("doorpi.actions.snapshot", "INFO"):
             snapshot.SnapshotAction.cleanup()
 
-        expected_files = [
-            f"1970-01-01 00:{i:02d}:00.jpg" for i in range(50, 60)
-        ]
+        expected_files = [f"1970-01-01 00:{i:02d}:00.jpg" for i in range(50, 60)]
         actual_files = sorted(f.name for f in self.snap_path.iterdir())
         self.assertEqual(actual_files, expected_files)
 
 
+@skipIf(find_spec("picamera") is None, "picamera module not available")
 class TestPicamSnapshotAction(SnapshotTestCase):
-    def setUp(self):
-        # pylint: disable=import-outside-toplevel, unused-import
-        try:
-            import picamera
-        except ImportError as err:
-            if err.name == "picamera":
-                self.skipTest("picamera module not available")
-            else:
-                raise
-        super().setUp()
-
     @patch("picamera.PiCamera")
     @patch("doorpi.INSTANCE", new_callable=DoorPi)
     def test_action(self, _, picamera):

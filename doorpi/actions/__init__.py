@@ -28,9 +28,8 @@ import abc
 import importlib.metadata
 import importlib.util
 import logging
-import pkgutil
 from collections.abc import Callable, Mapping
-from typing import Any, Dict, Optional, Protocol, TypeVar, runtime_checkable
+from typing import Any, Protocol, TypeVar, runtime_checkable
 
 import doorpi
 
@@ -45,9 +44,7 @@ def from_string(confstr: str) -> Action | None:
     if not atype:
         return None
     try:
-        eps = importlib.metadata.entry_points(
-            group="doorpi.actions", name=atype
-        )
+        eps = importlib.metadata.entry_points(group="doorpi.actions", name=atype)
         entrypoint = next(iter(eps))
     except StopIteration:
         raise ValueError(f"Unknown action {atype!r}") from None
@@ -57,7 +54,7 @@ def from_string(confstr: str) -> Action | None:
 
 
 @runtime_checkable
-class Action(Protocol, metaclass=abc.ABCMeta):
+class Action(Protocol, metaclass=abc.ABCMeta):  # noqa: FURB180
     """Abstract base class that defines an action's interface."""
 
     @abc.abstractmethod
@@ -94,9 +91,9 @@ class Action(Protocol, metaclass=abc.ABCMeta):
     def __str__(self) -> str:
         """A human readable representation of this action.
 
-        str(some_action) should result in a human-readable string that
-        accurately describes the action, which will be used in user
-        facing applications (e.g. logs or the web UI).
+        str(some_action) should result in a human-readable string that accurately
+        describes the action, which will be used in user facing applications (e.g. logs
+        or the web UI).
         """
         return ""
 
@@ -104,10 +101,9 @@ class Action(Protocol, metaclass=abc.ABCMeta):
     def __repr__(self) -> str:
         """Form an action string.
 
-        repr(some_action) should reassemble the string which originally
-        constructed this action, or a string equal to that. For actions
-        which cannot be serialized that way, a string beginning with
-        "<internal " should be returned.
+        repr(some_action) should reassemble the string which originally constructed this
+        action, or a string equal to that. For actions which cannot be serialized that
+        way, a string beginning with "<internal " should be returned.
         """
         return ""
 
@@ -115,9 +111,9 @@ class Action(Protocol, metaclass=abc.ABCMeta):
 class CallbackAction(Action):
     """An action that executes a callback.
 
-    This is used to facilitate programming of other modules. It is used
-    to wrap functions or (bound) methods, so that they can be executed
-    in response to a certain event by the event manager.
+    This is used to facilitate programming of other modules. It is used to wrap
+    functions or (bound) methods, so that they can be executed in response to a certain
+    event by the event manager.
     """
 
     def __init__(
@@ -150,15 +146,15 @@ class CallbackAction(Action):
 class CheckAction(CallbackAction):
     """A CallbackAction which aborts program execution on errors.
 
-    Callbacks wrapped by this action are expected to raise an
-    appropriate exception in case an internal error is detected. The
-    exception will be logged and DoorPi will shut down.
+    Callbacks wrapped by this action are expected to raise an appropriate exception in
+    case an internal error is detected. The exception will be logged and DoorPi will
+    shut down.
     """
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
         try:
             super().__call__(event_id, extra)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             LOGGER.exception("[%s] *** Internal self check failed", event_id)
             doorpi.INSTANCE.doorpi_shutdown()
 

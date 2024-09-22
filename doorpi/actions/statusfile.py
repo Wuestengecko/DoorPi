@@ -27,6 +27,7 @@ class StatusfileAction(Action):
             pass
 
     def __call__(self, event_id: str, extra: Mapping[str, Any]) -> None:
+        del extra
         content = doorpi.INSTANCE.parse_string(self.__content)
 
         try:
@@ -35,7 +36,7 @@ class StatusfileAction(Action):
                 "!DOORPI_STATUS.json_beautified!", status.json_beautified
             )
             content = content.replace("!DOORPI_STATUS.json!", status.json)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             LOGGER.exception(
                 "[%s] Error fetching status information for file %s",
                 event_id,

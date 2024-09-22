@@ -7,16 +7,14 @@ from typing import Any, cast
 import doorpi.doorpi
 
 LOGGER = cast(doorpi.DoorPiLogger, logging.getLogger(__name__))
-DEFAULT_MODULE_ATTR = frozenset(
-    {
-        "__doc__",
-        "__file__",
-        "__name__",
-        "__package__",
-        "__path__",
-        "__version__",
-    }
-)
+DEFAULT_MODULE_ATTR = frozenset({
+    "__doc__",
+    "__file__",
+    "__name__",
+    "__package__",
+    "__path__",
+    "__version__",
+})
 
 
 try:
@@ -56,7 +54,7 @@ def check_module_status(module: dict[str, Any]) -> dict[str, Any]:
                 module["is_fulfilled"] = True
             status["content"] = content
 
-        except Exception as err:  # pylint: disable=broad-except
+        except Exception as err:
             status = {"installed": False, "error": str(err)}
             if not module["fulfilled_with_one"]:
                 module["is_fulfilled"] = False
@@ -86,9 +84,7 @@ def load_module_status(module_name: str) -> dict[str, Any]:
         for ent in lib_req:
             if ent.startswith("text_"):
                 lib_req[ent] = rsttohtml(lib_req[ent])
-                LOGGER.trace(
-                    "Parsed %s.libraries.%s.%s", module_name, lib_name, ent
-                )
+                LOGGER.trace("Parsed %s.libraries.%s.%s", module_name, lib_name, ent)
 
     # module.[configuration, events].*.description
     for ent in ("configuration", "events"):
@@ -98,9 +94,7 @@ def load_module_status(module_name: str) -> dict[str, Any]:
                     module[ent][sub]["description"] = rsttohtml(
                         module[ent][sub]["description"]
                     )
-                    LOGGER.trace(
-                        "Parsed %s.%s.%s.description", module_name, ent, sub
-                    )
+                    LOGGER.trace("Parsed %s.%s.%s.description", module_name, ent, sub)
                 except KeyError:
                     pass
         except KeyError:

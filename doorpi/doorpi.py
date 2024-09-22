@@ -66,9 +66,7 @@ class DoorPi:
         value: Sequence[str] = (),
         name: Sequence[str] = (),
     ) -> doorpi.status.status_class.DoorPiStatus:
-        return doorpi.status.status_class.DoorPiStatus(
-            self, modules, value, name
-        )
+        return doorpi.status.status_class.DoorPiStatus(self, modules, value, name)
 
     @property
     def base_path(self) -> pathlib.Path:
@@ -124,16 +122,13 @@ class DoorPi:
         del stackframe
         self.__shutdown = True
         self.__deadlysignals += 1
-        signame = signal.Signals(signum).name  # pylint: disable=no-member
+        signame = signal.Signals(signum).name
 
         if self.__deadlysignals == 1:
             LOGGER.info("Caught deadly signal %s, shutting down", signame)
             return
         if self.__deadlysignals == 2:
-            LOGGER.info(
-                "Caught deadly signal %s (2/3), forcing shutdown", signame
-            )
-            # pylint: disable-next=broad-exception-raised
+            LOGGER.info("Caught deadly signal %s (2/3), forcing shutdown", signame)
             raise BaseException("Force-exiting due to signal")
 
         LOGGER.info(
@@ -171,9 +166,9 @@ class DoorPi:
         )
 
         # register modules
-        self.webserver = doorpi.web.load()  # pylint: disable=E1111, E1128
+        self.webserver = doorpi.web.load()
         self.keyboard = doorpi.keyboard.load()
-        self.mqtt = doorpi.mqtt.load()  # pylint: disable=E1111, E1128
+        self.mqtt = doorpi.mqtt.load()
         self.sipphone = doorpi.sipphone.load()
 
         self.keyboard.start()
@@ -201,9 +196,7 @@ class DoorPi:
         if not self.__prepared:
             return
 
-        LOGGER.debug(
-            "Threads before starting shutdown: %s", self.event_handler.threads
-        )
+        LOGGER.debug("Threads before starting shutdown: %s", self.event_handler.threads)
 
         self.event_handler.fire_event_sync("BeforeShutdown", __name__)
         self.event_handler.fire_event_sync("OnShutdown", __name__)
@@ -218,12 +211,8 @@ class DoorPi:
                 timeout,
                 len(self.event_handler.threads),
             )
-            LOGGER.trace(
-                "Still existing event threads: %s", self.event_handler.threads
-            )
-            LOGGER.trace(
-                "Still existing event sources: %s", self.event_handler.sources
-            )
+            LOGGER.trace("Still existing event threads: %s", self.event_handler.threads)
+            LOGGER.trace("Still existing event sources: %s", self.event_handler.sources)
             time.sleep(waiting_between_checks)
             timeout -= waiting_between_checks
 
@@ -303,20 +292,13 @@ class DoorPi:
 
         def format_table_row(key: Any, val: Any) -> str:
             key = html.escape(str(key))
-            val = (
-                html.escape(str(val))
-                .replace("\r\n", "\n")
-                .replace("\n", "<br>")
-            )
+            val = html.escape(str(val)).replace("\r\n", "\n").replace("\n", "<br>")
             return f"<tr><th>{key}</th><td>{val}</td></tr>"
 
         infos_as_html = "".join(
             itertools.chain(
                 ("<table><tbody>",),
-                (
-                    format_table_row(key, val)
-                    for key, val in self.extra_info.items()
-                ),
+                itertools.starmap(format_table_row, self.extra_info.items()),
                 ("</tbody></table>",),
             )
         )

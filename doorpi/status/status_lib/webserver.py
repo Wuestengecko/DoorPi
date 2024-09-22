@@ -23,12 +23,10 @@ def get(
         name = status_getters.keys()
     if doorpi_obj.webserver is None:
         return dict.fromkeys(name, None)
-    else:
-        return {
-            n: status_getters[n](doorpi_obj.webserver)
-            for n in name
-            if n in status_getters
-        }
+
+    return {
+        n: status_getters[n](doorpi_obj.webserver) for n in name if n in status_getters
+    }
 
 
 def is_active(doorpi_object: doorpi.doorpi.DoorPi) -> bool:

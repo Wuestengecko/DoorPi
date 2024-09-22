@@ -7,8 +7,9 @@ import logging
 import os
 import pathlib
 from collections.abc import Iterator, Mapping, MutableMapping, Sequence
+from contextlib import AbstractContextManager
 from importlib import resources
-from typing import Any, ContextManager, TextIO
+from typing import Any, TextIO
 
 import toml
 
@@ -42,17 +43,15 @@ class Configuration:
             key, val = subconf.pop()
             if isinstance(val, dict):
                 subconf.extend(
-                    (f"{key}.{subkey}", subval)
-                    for subkey, subval in val.items()
+                    (f"{key}.{subkey}", subval) for subkey, subval in val.items()
                 )
             else:
                 self[key] = val
 
     def save(self, path: str | os.PathLike | TextIO) -> None:
         """Save the configuration into the given TOML file."""
-        if isinstance(path, (str, os.PathLike)):
-            # pylint: disable-next=consider-using-with
-            ctx: ContextManager[TextIO] = open(path, "w", encoding="locale")
+        if isinstance(path, str | os.PathLike):
+            ctx: AbstractContextManager[TextIO] = open(path, "w", encoding="locale")  # noqa: SIM115
         else:
             ctx = contextlib.nullcontext(path)
         with ctx as file:
@@ -68,8 +67,7 @@ class Configuration:
         ) -> None:
             if not isinstance(updates, dict):  # pragma: no cover
                 raise TypeError(
-                    "Expected key definition table, got"
-                    f" {type(updates).__name__}"
+                    f"Expected key definition table, got {type(updates).__name__}"
                 )
 
             update_is_namespace = not set(updates) & flagkeys
@@ -77,28 +75,20 @@ class Configuration:
             if target and update_is_namespace ^ target_is_namespace:
                 target_type = ("key", "namespace")[target_is_namespace]
                 update_type = ("key", "namespace")[update_is_namespace]
-                raise ValueError(
-                    f"Cannot convert from {target_type} to {update_type}"
-                )
+                raise ValueError(f"Cannot convert from {target_type} to {update_type}")
 
             if not update_is_namespace:
                 target.clear()
-                target.update(
-                    {k: v for k, v in updates.items() if k.startswith("_")}
-                )
+                target.update({k: v for k, v in updates.items() if k.startswith("_")})
                 self.__make_type(keypath, target)
                 if "_default" in target:
-                    target["_default"] = target["_type"].insertcast(
-                        target["_default"]
-                    )
+                    target["_default"] = target["_type"].insertcast(target["_default"])
             else:
                 for key, val in updates.items():
                     if key.startswith("_"):
                         target[key[1:]] = val
                     else:
-                        update_defs(
-                            keypath + (key,), target.setdefault(key, {}), val
-                        )
+                        update_defs((*keypath, key), target.setdefault(key, {}), val)
 
         update_defs((), self.__defs, defs.get("config", {}))
 
@@ -121,9 +111,7 @@ class Configuration:
             try:
                 value = keydef["_default"]
             except KeyError:
-                raise KeyError(
-                    f"No value set for required key {key}"
-                ) from None
+                raise KeyError(f"No value set for required key {key}") from None
         return keydef["_type"].querycast(value)
 
     def __setitem__(self, key: str | Sequence[str], value: Any) -> None:
@@ -216,9 +204,7 @@ class ConfigView(collections.abc.Mapping):
         self.__source[keypath] = value
 
     def __getitem__(self, key: str | Sequence[str]) -> Any:
-        return self.__source[
-            tuple(itertools.chain(self.__path, _splitkey(key)))
-        ]
+        return self.__source[tuple(itertools.chain(self.__path, _splitkey(key)))]
 
     def view(self, subkey: str | Sequence[str]) -> ConfigView:
         """Return a subview onto the ``key`` within this section."""

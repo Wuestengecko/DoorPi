@@ -98,7 +98,7 @@ def endpoint_config() -> pj.EpConfig:
     # Bind the LogWriter's lifetime to the sipphone object, so that
     # it won't be garbage-collected prematurely.
     sp = cast("glue.Pjsua2", doorpi.INSTANCE.sipphone)
-    sp._logwriter = logwriter  # pylint: disable=protected-access
+    sp._logwriter = logwriter
 
     return ep_cfg
 
@@ -152,12 +152,10 @@ def setup_audio_devices(adm: pj.AudDevManager) -> None:
     # Setup configured capture / playback devices
     capture_device = doorpi.INSTANCE.config["sipphone.capture.device"]
     playback_device = doorpi.INSTANCE.config["sipphone.playback.device"]
-    if capture_device == "" or playback_device == "":
+    if not capture_device or not playback_device:
         LOGGER.critical("No audio devices configured! Detected audio devices:")
         list_audio_devices(adm, logging.CRITICAL)
-        raise ValueError(
-            "No audio devices configured (See log for possible options)"
-        )
+        raise ValueError("No audio devices configured (See log for possible options)")
 
     capture_drv, _, capture_dev = capture_device.partition(":")
     playback_drv, _, playback_dev = playback_device.partition(":")
@@ -215,9 +213,7 @@ def setup_audio_volume(adm: pj.AudDevManager) -> None:
 def setup_audio_codecs(endpoint: pj.Endpoint) -> None:
     """Configures the enabled codecs in PJSUA2."""
     allcodecs = endpoint.codecEnum2()
-    LOGGER.debug(
-        "Supported audio codecs: %s", ", ".join(c.codecId for c in allcodecs)
-    )
+    LOGGER.debug("Supported audio codecs: %s", ", ".join(c.codecId for c in allcodecs))
     confcodecs = doorpi.INSTANCE.config["sipphone.codecs"]
     if not confcodecs:
         return
@@ -259,7 +255,6 @@ def setup_audio_echo_cancellation(adm: pj.AudDevManager) -> None:
         adm.setEcOptions(0, 0)
 
 
-# pylint: disable=too-few-public-methods
 class DoorPiLogWriter(pj.LogWriter):
     """Redirects output from the PJSUA2 native module to a Python logger."""
 

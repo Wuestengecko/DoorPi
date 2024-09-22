@@ -13,10 +13,9 @@ class TestActionInstantiation(DoorPiTestCase):
             ("Colon, no args", "log:", []),
             ("Colon + args", "log:foo,bar,baz", ["foo", "bar", "baz"]),
         ):
-            with self.subTest(title):
-                with patch("doorpi.actions.log.LogAction") as action:
-                    doorpi.actions.from_string(ac_str)
-                    action.assert_called_once_with(*parms)
+            with self.subTest(title), patch("doorpi.actions.log.LogAction") as action:
+                doorpi.actions.from_string(ac_str)
+                action.assert_called_once_with(*parms)
 
     def test_emptystring(self):
         ac = doorpi.actions.from_string("")
@@ -36,7 +35,7 @@ class TestCallbackAction(DoorPiTestCase):
 
     def test_callback_uncallable(self):
         with self.assertRaises(ValueError):
-            doorpi.actions.CallbackAction(None)
+            doorpi.actions.CallbackAction(None)  # type: ignore[arg-type]
 
 
 class TestCheckAction(DoorPiTestCase):

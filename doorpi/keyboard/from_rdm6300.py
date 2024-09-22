@@ -75,9 +75,7 @@ LOGGER = logging.getLogger(__name__)
 class RDM6300Keyboard(SeriallyConnectedKeyboard):
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        doorpi.INSTANCE.event_handler.register_event(
-            "OnTagUnknown", self._event_source
-        )
+        doorpi.INSTANCE.event_handler.register_event("OnTagUnknown", self._event_source)
 
         self._input_start_flag = b"\x02"
         self._input_stop_flag = b"\x03"
