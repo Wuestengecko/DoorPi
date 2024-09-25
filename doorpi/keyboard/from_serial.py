@@ -105,7 +105,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
 
     def _deactivate(self) -> None:
         self._shutdown = True
-        if self._ser and self._ser.isOpen():
+        if self._ser and self._ser.is_open:
             self._ser.close()
         self._thread.join()
 
@@ -113,15 +113,15 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
         super().output(pin, value)
         value = self._normalize(value)
 
-        if not self._ser or not self._ser.isOpen():
+        if not self._ser or not self._ser.is_open:
             LOGGER.error("%s: Cannot write to keyboard: connection not open", self.name)
             return False
 
         if not value:
             return True
 
-        self._ser.flushOutput()
-        self._ser.write(pin)
+        self._ser.flush()
+        self._ser.write(pin.encode("ascii"))
         self._ser.write(self._output_stop_flag)
         self._ser.flush()
         return True
@@ -141,7 +141,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
         keyboard.
         """
         buflen = self._input_max_size
-        buf = collections.deque[bytes](maxlen=buflen + 1)
+        buf = collections.deque[int](maxlen=buflen + 1)
         stopflag = self._input_stop_flag
         try:
             while not self._shutdown:
@@ -170,7 +170,7 @@ class SeriallyConnectedKeyboard(AbstractKeyboard):
                         # remove STOP flag
                         for _ in range(len(stopflag)):
                             buf.pop()
-                        self.process_buffer(b"".join(buf))
+                        self.process_buffer(bytes(buf))
                     buf.clear()
         except Exception as ex:
             if not self._shutdown:

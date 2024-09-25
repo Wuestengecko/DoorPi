@@ -53,6 +53,7 @@ value, no event will be triggered. The same applies for "low" values.
 """
 
 import logging
+import os
 import pathlib
 from typing import Any
 
@@ -194,7 +195,7 @@ class FilesystemKeyboard(AbstractKeyboard, watchdog.events.FileSystemEventHandle
         if not isinstance(event, watchdog.events.FileModifiedEvent):
             return
 
-        pin = pathlib.Path(event.src_path)
+        pin = pathlib.Path(os.fsdecode(event.src_path))
         if pin.name not in self._inputs or pin.parent != self.__base_path_input:
             LOGGER.warning(
                 "%s: Received unsolicited FileModifiedEvent for %s",

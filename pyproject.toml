@@ -40,17 +40,18 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "aiohttp",
-  "aiohttp-jinja2",
-  "platformdirs>=4.3.6",
-  "docutils>=0.14",
-  "jinja2>=2.11.0",
+  "aiohttp-jinja2>=1.6,<2",
+  "aiohttp>=3.10.6,<4",
+  "docutils>=0.21.2",
+  "jinja2>=3.1.4,<4",
   "paho-mqtt>=2.1.0,<3",
-  "pyserial>=2.7",
-  "requests>=2.7.0",
-  "tomli>=1.2.2; python_version<'3.11'",
+  "platformdirs>=4.3.6,<5",
+  "pyserial>=3.5,<4",
+  "pytz>=2024.2",
+  "requests>=2.32.3",
   "tomli-w>=1.0.0,<2",
-  "watchdog>=0.8.3",
+  "tomli>=1.2.2; python_version<'3.11'",
+  "watchdog>=5.0.2,<6",
 ]
 
 [project.urls]
@@ -127,10 +128,6 @@ disallow_untyped_defs = false
 # Untyped 3rd party libs
 module = [
   "RPi.*",
-  "aiohttp.*",
-  "aiohttp_jinja2.*",
-  "aiohttp_session.*",
-  "jinja2.*",
   "gpiod.*",
   "nfc.*",
   "picamera.*",
@@ -138,8 +135,6 @@ module = [
   "pifacedigitalio.*",
   "pjsua2.*",
   "serial.*",
-  "setuptools.*",
-  "watchdog.*",
 ]
 ignore_missing_imports = true
 
