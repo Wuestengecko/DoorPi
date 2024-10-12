@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 from typing import TYPE_CHECKING
 
 import pjsua2 as pj
@@ -36,6 +37,10 @@ class Worker:
         # events will be handled here, and not by any native threads.
         self.__ep.libCreate()
         self.__ep.libInit(config.endpoint_config())
+        try:
+            sys.stderr.flush()
+        except Exception as err:
+            LOGGER.debug("Cannot flush stderr: %s: %s", type(err).__name__, err)
         self.__ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, config.transport_config())
         config.setup_audio(self.__ep)
         self.__ep.libStart()
