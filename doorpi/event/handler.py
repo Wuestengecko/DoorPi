@@ -247,8 +247,7 @@ class EventHandler:
         if events:
             if force is False:
                 LOGGER.error(
-                    "Attempt to unregister source %s,"
-                    " which is used for %d events: %s",
+                    "Attempt to unregister source %s, which is used for %d events: %s",
                     source,
                     len(events),
                     ", ".join(events),
