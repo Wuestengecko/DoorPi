@@ -73,18 +73,6 @@ class CallCallback(pj.Call):
         self.__possible_dtmf = doorpi.INSTANCE.config.view("sipphone.dtmf").keys()
         self.__fire_disconnect = False
 
-    def __getAudioVideoMedia(self) -> tuple[pj.AudioMedia, pj.VideoMedia]:
-        """Helper function that returns the first audio and video media."""
-        audio = None
-        video = None
-        ci = self.getInfo()
-        for i, media in enumerate(ci.media):
-            if media.type == pj.PJMEDIA_TYPE_AUDIO and audio is None:
-                audio = pj.AudioMedia.typecastFromMedia(self.getMedia(i))
-            if media.type == pj.PJMEDIA_TYPE_VIDEO and video is None:
-                video = pj.VideoMedia.typecastFromMedia(self.getMedia(i))
-        return (audio, video)
-
     def onCallState(self, prm: pj.OnCallStateParam) -> None:
         ci = self.getInfo()
         sp = cast("glue.Pjsua2", doorpi.INSTANCE.sipphone)
@@ -144,28 +132,20 @@ class CallCallback(pj.Call):
     def onCallMediaState(self, prm: pj.OnCallMediaStateParam) -> None:
         del prm
         ci = self.getInfo()
-        if ci.state != pj.PJSIP_INV_STATE_CONFIRMED:
-            LOGGER.debug("Ignoring media change in call to %r", ci.remoteUri)
-            return
+        LOGGER.debug("Call to %r: media changed", ci.remoteUri)
 
         adm = pj.Endpoint.instance().audDevManager()
-        LOGGER.debug("Call to %r: media changed", ci.remoteUri)
-        audio, _ = self.__getAudioVideoMedia()
+        conf = doorpi.INSTANCE.config
+        playback_loudness = conf["sipphone.playback.loudness"]
+        capture_loudness = conf["sipphone.capture.loudness"]
 
-        if audio:
-            # Connect call audio to speaker and microphone
-            audio.startTransmit(adm.getPlaybackDevMedia())
-            adm.getCaptureDevMedia().startTransmit(audio)
-            # Apply capture and ring tone loudness
-            conf = doorpi.INSTANCE.config
-            playback_loudness = conf["sipphone.playback.loudness"]
-            capture_loudness = conf["sipphone.capture.loudness"]
-            LOGGER.trace("Adjusting RX level to %01.1f", playback_loudness)
-            LOGGER.trace("Adjusting TX level to %01.1f", capture_loudness)
-            audio.adjustRxLevel(playback_loudness)
-            audio.adjustTxLevel(capture_loudness)
-        else:
-            LOGGER.error("Call to %r: no audio media", ci.remoteUri)
+        for i, m in enumerate(ci.media):
+            if m.type == pj.PJMEDIA_TYPE_AUDIO:
+                audio = pj.AudioMedia.typecastFromMedia(self.getMedia(i))
+                audio.startTransmit(adm.getPlaybackDevMedia())
+                adm.getCaptureDevMedia().startTransmit(audio)
+                audio.adjustRxLevel(playback_loudness)
+                audio.adjustTxLevel(capture_loudness)
 
     def onDtmfDigit(self, prm: pj.OnDtmfDigitParam) -> None:
         LOGGER.debug("Received DTMF: %s", prm.digit)
